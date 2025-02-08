@@ -1,2 +1,48 @@
+created:
+    - database/factories/CustomerFactory.php
+    - database/factories/ProductFactory.php
+    - database/factories/UnitpriceFactory.php
+    - database/factories/StockFactory.php
+    - database/factories/CategoryFactory.php
+    - database/factories/TruckFactory.php
+    - database/factories/DriverFactory.php
+    - database/factories/OrderFactory.php
+    - database/factories/PaymentFactory.php
+    - database/factories/InvoiceFactory.php
+    - database/factories/ComplaintFactory.php
+    - database/migrations/2025_02_08_165340_create_customers_table.php
+    - database/migrations/2025_02_08_165341_create_products_table.php
+    - database/migrations/2025_02_08_165342_create_unitprices_table.php
+    - database/migrations/2025_02_08_165343_create_stocks_table.php
+    - database/migrations/2025_02_08_165344_create_categories_table.php
+    - database/migrations/2025_02_08_165345_create_trucks_table.php
+    - database/migrations/2025_02_08_165346_create_drivers_table.php
+    - database/migrations/2025_02_08_165347_create_orders_table.php
+    - database/migrations/2025_02_08_165348_create_payments_table.php
+    - database/migrations/2025_02_08_165349_create_invoices_table.php
+    - database/migrations/2025_02_08_165350_create_complaints_table.php
+    - database/migrations/2025_02_08_165351_create_order_product_table.php
+    - app/Models/Customer.php
+    - app/Models/Product.php
+    - app/Models/Unitprice.php
+    - app/Models/Stock.php
+    - app/Models/Category.php
+    - app/Models/Truck.php
+    - app/Models/Driver.php
+    - app/Models/Order.php
+    - app/Models/Payment.php
+    - app/Models/Invoice.php
+    - app/Models/Complaint.php
 models:
     User: { name: string, email: string, email_verified_at: 'datetime nullable', password: string, remember_token: 'string nullable' }
+    Customer: { user_id: 'id foreign', phone: string, address: string }
+    Product: { name: string, description: 'text nullable', category_id: 'id foreign', unitprice_id: 'id foreign', relationships: { belongsToMany: Order } }
+    Unitprice: { price: 'decimal(10,2)' }
+    Stock: { product_id: 'id foreign', quantity: integer, safety_stock: integer }
+    Category: { name: 'string unique' }
+    Truck: { license_plate: 'string unique' }
+    Driver: { user_id: 'id foreign', driver_license: 'string unique', nrc_number: 'string unique', phone: string }
+    Order: { customer_id: 'id foreign', status: 'enum:pending,processing,completed,cancelled', total_price: 'decimal(10,2)', payment_status: 'enum:pending,paid,failed', relationships: { belongsToMany: Product } }
+    Payment: { order_id: 'id foreign', amount: 'decimal(10,2)', method: 'enum:credit_card,paypal,cash,bank_transfer', status: 'enum:pending,completed,failed' }
+    Invoice: { order_id: 'id foreign', invoice_number: 'string unique', issue_date: timestamp, due_date: timestamp, total_amount: 'decimal(10,2)', status: 'enum:unpaid,paid,cancelled' }
+    Complaint: { customer_id: 'id foreign', order_id: 'id foreign nullable', subject: string, description: text, status: 'enum:open,in_progress,resolved,closed', type: 'enum:delayed,faulty,wrong,missing' }
