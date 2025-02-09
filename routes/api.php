@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TruckController;
@@ -17,4 +18,5 @@ Route::apiResource('categories', CategoryController::class);
 Route::apiResource('invoices',InvoiceController::class);
 Route::apiResource('dirvers',DriverController::class);
 Route::apiResource('trucks',TruckController::class);
+Route::apiResource('complaints',ComplaintController::class);
 
