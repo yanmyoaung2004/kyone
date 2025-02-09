@@ -20,10 +20,10 @@ class OrderUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => ['required', 'integer', 'exists:customers,id'],
-            'status' => ['required', 'in:pending,processing,completed,cancelled'],
-            'total_price' => ['required', 'string'],
-            'payment_status' => ['required', 'in:pending,paid,failed'],
+            'customer_id' => ['integer', 'exists:customers,id'],
+            'status' => ['in:pending,processing,completed,cancelled'],
+            'total_price' => ['string'],
+            'payment_status' => ['in:pending,paid,failed'],
         ];
     }
 }
