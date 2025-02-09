@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Unitprice extends Model
 {
@@ -16,6 +17,7 @@ class Unitprice extends Model
      */
     protected $fillable = [
         'price',
+        'product_id',
     ];
 
     /**
@@ -25,5 +27,11 @@ class Unitprice extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'product_id' => 'integer',
     ];
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
