@@ -1,105 +1,151 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Stock;
+use App\Models\Unitprice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Exception;
+use Illuminate\Http\Response;
 
-class StockController extends Controller
+class UnitpriceController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the Unitprices with caching.
+     *
+     * @return Response
      */
     public function index()
     {
-        try {
-            $stocks = Cache::remember('stocks', 60, function () {
-                return Stock::with('product')->get();
-            });
-            return response()->json($stocks);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to fetch stocks', 'message' => $e->getMessage()], 500);
-        }
+        $cacheKey = 'unitprices_all';
+
+        // Check if the cache is available and return it
+        $unitprices = Cache::remember($cacheKey, now()->addMinutes(60), function () {
+            return Unitprice::select('product_id', 'price')->get();
+        });
+
+        return response()->json($unitprices);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created Unitprice in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return Response
      */
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'product_id' => 'required|exists:products,id',
-                'quantity' => 'required|integer|min:0',
-                'safety_stock' => 'required|integer|min:0',
-            ]);
+        // Validate input data
+        $validated = $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'price' => 'required|numeric|min:0',
+        ]);
 
-            $stock = Stock::create($request->all());
-            Cache::forget('stocks');
+        // Create or update Unitprice
+        $unitprice = Unitprice::createOrUpdate($validated);
 
-            return response()->json($stock, 201);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to create stock', 'message' => $e->getMessage()], 500);
-        }
+        // Clear the cache as we added/updated a unitprice
+        Cache::forget('unitprices_all');
+
+        return response()->json($unitprice, 201);
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified Unitprice with caching.
+     *
+     * @param  int  $id
+     * @return Response
      */
-    public function show($id)
+    public function show(int $id)
     {
-        try {
-            $stock = Stock::with('product')->findOrFail($id);
-            return response()->json($stock);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Stock not found'], 404);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to fetch stock', 'message' => $e->getMessage()], 500);
+        $cacheKey = "unitprice_{$id}";
+
+        // Check if the cache is available and return it
+        $unitprice = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($id) {
+            return Unitprice::find($id);
+        });
+
+        if (!$unitprice) {
+            return response()->json(['message' => 'Unitprice not found'], 404);
         }
+
+        return response()->json($unitprice);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified Unitprice in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
-        try {
-            $stock = Stock::findOrFail($id);
+        // Validate input data
+        $validated = $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'price' => 'required|numeric|min:0',
+        ]);
 
-            $request->validate([
-                'quantity' => 'sometimes|required|integer|min:0',
-                'safety_stock' => 'sometimes|required|integer|min:0',
-            ]);
+        $unitprice = Unitprice::find($id);
 
-            $stock->update($request->all());
-            Cache::forget('stocks');
-
-            return response()->json($stock);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Stock not found'], 404);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to update stock', 'message' => $e->getMessage()], 500);
+        if (!$unitprice) {
+            return response()->json(['message' => 'Unitprice not found'], 404);
         }
+
+        // Update Unitprice
+        $unitprice->update($validated);
+
+        // Clear cache for both all unit prices and the specific one
+        Cache::forget('unitprices_all');
+        Cache::forget("unitprice_{$id}");
+
+        return response()->json($unitprice);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified Unitprice from storage.
+     *
+     * @param  int  $id
+     * @return Response
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
-        try {
-            $stock = Stock::findOrFail($id);
-            $stock->delete();
-            Cache::forget('stocks');
+        $unitprice = Unitprice::find($id);
 
-            return response()->json(['message' => 'Stock deleted successfully']);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Stock not found'], 404);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to delete stock', 'message' => $e->getMessage()], 500);
+        if (!$unitprice) {
+            return response()->json(['message' => 'Unitprice not found'], 404);
         }
+
+        // Delete Unitprice
+        $unitprice->delete();
+
+        // Clear the cache for both all unit prices and the specific one
+        Cache::forget('unitprices_all');
+        Cache::forget("unitprice_{$id}");
+
+        return response()->json(['message' => 'Unitprice deleted successfully']);
+    }
+
+    /**
+     * Bulk insert Unitprices for better performance with caching.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return Response
+     */
+    public function bulkInsert(Request $request)
+    {
+        // Validate the array of unitprices
+        $validated = $request->validate([
+            'unitprices' => 'required|array',
+            'unitprices.*.product_id' => 'required|integer|exists:products,id',
+            'unitprices.*.price' => 'required|numeric|min:0',
+        ]);
+
+        // Bulk insert Unitprices
+        $inserted = Unitprice::bulkInsert($validated['unitprices']);
+
+        // Clear the cache for all unit prices
+        Cache::forget('unitprices_all');
+
+        return response()->json(['message' => 'Unitprices inserted successfully'], 201);
     }
 }
