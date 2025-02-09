@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\OrderAssignTruckController;
 use App\Http\Controllers\TruckController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,7 +25,6 @@ Route::get('/customers/{id}',[CustomerController::class,'getCustomer']);
 Route::patch('/customers/{id}',[CustomerController::class,'update']);
 Route::delete('/customers/{id}',[CustomerController::class,'delete']);
 
-
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('invoices',InvoiceController::class);
 Route::apiResource('dirvers',DriverController::class);
@@ -33,4 +34,14 @@ Route::apiResource('stocks', StockController::class);
 Route::get('/stocks/check_stock/{productId}',[StockController::class,'checkStock']);
 Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class);
+Route::apiResource('orderAssignTrucks',OrderAssignTruckController::class);
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/logout', [AuthController::class, 'logout']);
+
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::post('/logout', [AuthController::class, 'logout']);
+// });
 
