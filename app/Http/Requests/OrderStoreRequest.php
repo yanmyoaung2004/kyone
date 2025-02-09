@@ -23,7 +23,7 @@ class OrderStoreRequest extends FormRequest
             'customer_id' => ['required', 'integer', 'exists:customers,id'],
             'status' => ['required', 'in:pending,processing,completed,cancelled'],
             'total_price' => ['required', 'string'],
-            'payment_status' => ['required', 'in:pending,paid,failed'],
+            'method' => ['required', 'in:credit_card,paypal,cash,bank_transfer'],
         ];
     }
 }

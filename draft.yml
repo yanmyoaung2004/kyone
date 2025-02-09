@@ -40,6 +40,7 @@ models:
 
     relationships:
       hasOne: Payment
+      hasOne: Invoice
       belongsToMany: Product
 
   Payment:
@@ -50,11 +51,7 @@ models:
 
   Invoice:
     order_id: id foreign
-    invoice_number: string unique
-    issue_date: timestamp
-    due_date: timestamp
     total_amount: decimal(10,2)
-    status: enum:unpaid,paid,cancelled
 
   Complaint:
     customer_id: id foreign
