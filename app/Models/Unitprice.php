@@ -15,6 +15,7 @@ class Unitprice extends Model
      * @var array
      */
     protected $fillable = [
+        'product_id',
         'price',
     ];
 
@@ -25,5 +26,6 @@ class Unitprice extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'product_id' => 'integer',
     ];
 }
