@@ -15,16 +15,18 @@ class InvoiceController extends Controller
         try{
         $request->validate([
             'order_id' => 'required|exists:orders,id',
-            'invoice_number' => 'required|unique:invoices,invoice_number',
             'issue_date' => 'required|date',
             'due_date' => 'required|date',
             'total_amount' => 'required|string',
             'status' => 'required|in:unpaid,paid,cancelled',
         ]);
 
+       // "INV65C61E123ABC"
+        $invoiceNumber = 'INV' . strtoupper(uniqid());
+
         Invoice::create([
             'order_id' => $request->order_id,
-            'invoice_number' => $request->invoice_number,
+            'invoice_number' => $request->$invoiceNumber,
             'issue_date' => Carbon::parse($request->issue_date),
             'due_date' => Carbon::parse($request->due_date),
             'total_amount' => $request->total_amount,
