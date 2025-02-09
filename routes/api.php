@@ -15,7 +15,7 @@ use App\Http\Controllers\UnitpriceController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
+Route::apiResource('orders', App\Http\Controllers\OrderController::class);
 Route::post('/customers',[CustomerController::class,'create']);
 Route::get('/customers',[CustomerController::class,'getAllCustomers']);
 Route::get('/customers/{id}',[CustomerController::class,'getCustomer']);

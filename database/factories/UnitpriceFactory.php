@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use App\Models\Product;
 use App\Models\Unitprice;
 
 class UnitpriceFactory extends Factory
@@ -22,6 +23,7 @@ class UnitpriceFactory extends Factory
     {
         return [
             'price' => fake()->word(),
+            'product_id' => Product::factory(),
         ];
     }
 }

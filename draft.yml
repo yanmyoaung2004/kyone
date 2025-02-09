@@ -8,12 +8,13 @@ models:
     name: string
     description: text nullable
     category_id: id foreign
-    unitprice_id: id foreign
     relationships:
+      hasOne: Unitprice, Stock
       belongsToMany: Order
 
   Unitprice:
     price: decimal(10,2)
+    product_id: id foreign
 
   Stock:
     product_id: id foreign
@@ -36,9 +37,9 @@ models:
     customer_id: id foreign
     status: enum:pending,processing,completed,cancelled
     total_price: decimal(10,2)
-    payment_status: enum:pending,paid,failed
 
     relationships:
+      hasOne: Payment, Invoice
       belongsToMany: Product
 
   Payment:
@@ -49,11 +50,7 @@ models:
 
   Invoice:
     order_id: id foreign
-    invoice_number: string unique
-    issue_date: timestamp
-    due_date: timestamp
     total_amount: decimal(10,2)
-    status: enum:unpaid,paid,cancelled
 
   Complaint:
     customer_id: id foreign

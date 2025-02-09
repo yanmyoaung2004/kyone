@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -20,7 +21,6 @@ class Order extends Model
         'customer_id',
         'status',
         'total_price',
-        'payment_status',
     ];
 
     /**
@@ -32,6 +32,16 @@ class Order extends Model
         'id' => 'integer',
         'customer_id' => 'integer',
     ];
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
 
     public function products(): BelongsToMany
     {

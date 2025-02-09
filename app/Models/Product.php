@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
@@ -20,7 +21,6 @@ class Product extends Model
         'name',
         'description',
         'category_id',
-        'unitprice_id',
     ];
 
     /**
@@ -31,8 +31,17 @@ class Product extends Model
     protected $casts = [
         'id' => 'integer',
         'category_id' => 'integer',
-        'unitprice_id' => 'integer',
     ];
+
+    public function unitprice(): HasOne
+    {
+        return $this->hasOne(Unitprice::class);
+    }
+
+    public function stock(): HasOne
+    {
+        return $this->hasOne(Stock::class);
+    }
 
     public function orders(): BelongsToMany
     {
@@ -42,10 +51,5 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function unitprice(): BelongsTo
-    {
-        return $this->belongsTo(Unitprice::class);
     }
 }
