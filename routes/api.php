@@ -8,6 +8,7 @@ use App\Http\Controllers\TruckController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UnitpriceController;
@@ -15,7 +16,7 @@ use App\Http\Controllers\UnitpriceController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-Route::apiResource('orders', App\Http\Controllers\OrderController::class);
+Route::apiResource('orders', OrderController::class);
 Route::post('/customers',[CustomerController::class,'create']);
 Route::get('/customers',[CustomerController::class,'getAllCustomers']);
 Route::get('/customers/{id}',[CustomerController::class,'getCustomer']);
