@@ -25,7 +25,7 @@ models:
 
   Truck:
     license_plate: string unique
-
+  
   Driver:
     user_id: id foreign
     driver_license: string unique
