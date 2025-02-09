@@ -19,6 +19,7 @@ class Order extends Model
      */
     protected $fillable = [
         'customer_id',
+        'location_id',
         'status',
         'total_price',
     ];
@@ -31,6 +32,7 @@ class Order extends Model
     protected $casts = [
         'id' => 'integer',
         'customer_id' => 'integer',
+        'location_id' => 'integer',
     ];
 
     public function payment(): HasOne
@@ -51,5 +53,10 @@ class Order extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
     }
 }
