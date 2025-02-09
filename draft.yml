@@ -26,7 +26,7 @@ models:
 
   Truck:
     license_plate: string unique
-  
+
   Driver:
     user_id: id foreign
     driver_license: string unique
@@ -35,8 +35,10 @@ models:
 
   Order:
     customer_id: id foreign
+    location_id: id foreign
     status: enum:pending,processing,completed,cancelled
     total_price: decimal(10,2)
+    eta: string nullable
 
     relationships:
       hasOne: Payment, Invoice
@@ -59,3 +61,8 @@ models:
     description: text
     status: enum:open,in_progress,resolved,closed
     type: enum:delayed,faulty,wrong,missing
+
+  Location:
+    address: string
+    state: string
+    city: string

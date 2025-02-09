@@ -22,6 +22,7 @@ class Order extends Model
         'location_id',
         'status',
         'total_price',
+        'eta',
     ];
 
     /**
