@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\Category;
-use App\Models\Unitprice;
-use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;  // Custom FormRequest for validation
 
 class ProductController extends Controller

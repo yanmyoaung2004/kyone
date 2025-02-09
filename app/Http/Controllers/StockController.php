@@ -17,7 +17,7 @@ class StockController extends Controller
     {
         try {
             $stocks = Cache::remember('stocks', 60, function () {
-                return Stock::with('product')->get();
+                return Stock::with(['product', 'unitprice'])->get();
             });
             return response()->json($stocks);
         } catch (Exception $e) {
@@ -35,6 +35,7 @@ class StockController extends Controller
                 'product_id' => 'required|exists:products,id',
                 'quantity' => 'required|integer|min:0',
                 'safety_stock' => 'required|integer|min:0',
+                'unitprice_id' => 'required|exists:unitprices,id',
             ]);
 
             $stock = Stock::create($request->all());
@@ -72,6 +73,7 @@ class StockController extends Controller
             $request->validate([
                 'quantity' => 'sometimes|required|integer|min:0',
                 'safety_stock' => 'sometimes|required|integer|min:0',
+                'unitprice_id' => 'sometimes|required|exists:unitprices,id',
             ]);
 
             $stock->update($request->all());

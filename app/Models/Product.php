@@ -20,7 +20,6 @@ class Product extends Model
         'name',
         'description',
         'category_id',
-        'unitprice_id',
     ];
 
     /**
@@ -31,7 +30,6 @@ class Product extends Model
     protected $casts = [
         'id' => 'integer',
         'category_id' => 'integer',
-        'unitprice_id' => 'integer',
     ];
 
     public function orders(): BelongsToMany
@@ -44,8 +42,5 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function unitprice(): BelongsTo
-    {
-        return $this->belongsTo(Unitprice::class);
-    }
+
 }
