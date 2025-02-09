@@ -33,8 +33,8 @@ class CategoryController extends Controller
             
         } catch (ValidationException $e) {
             return response()->json([
-                'message' => 'Enter Unique Category Name',
-                'errors' => $e->errors()
+                'message' => $e->errors(),
+                
             ], 422);
         }
     }
@@ -71,8 +71,8 @@ class CategoryController extends Controller
         
     }catch (ValidationException $e) {
         return response()->json([
-            'message' => 'Enter Unique Category Name',
-            'errors' => $e->errors()
+            'message' =>  $e->errors(),
+           
         ], 422);
     }
     }
