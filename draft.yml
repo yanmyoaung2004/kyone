@@ -37,9 +37,9 @@ models:
     customer_id: id foreign
     status: enum:pending,processing,completed,cancelled
     total_price: decimal(10,2)
-    payment_status: enum:pending,paid,failed
 
     relationships:
+      hasOne: Payment
       belongsToMany: Product
 
   Payment:
