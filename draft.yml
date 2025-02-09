@@ -8,8 +8,8 @@ models:
     name: string
     description: text nullable
     category_id: id foreign
-    unitprice_id: id foreign
     relationships:
+      hasOne: Unitprice, Stock
       belongsToMany: Order
 
   Unitprice:
@@ -39,8 +39,7 @@ models:
     total_price: decimal(10,2)
 
     relationships:
-      hasOne: Payment
-      hasOne: Invoice
+      hasOne: Payment, Invoice
       belongsToMany: Product
 
   Payment:
