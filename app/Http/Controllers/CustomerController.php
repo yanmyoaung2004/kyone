@@ -85,7 +85,7 @@ class CustomerController extends Controller
                 $customer->phone = $validatedData['phone'];
             }
             $customer->save();
-
+            $customer = Customer::with('user')->get();
             return response()->json(['message' => 'Customer updated successfully', 'customer' => $customer], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Customer update failed', 'message' => $e->getMessage()], 500);
@@ -93,16 +93,12 @@ class CustomerController extends Controller
     }
 
     public function delete($id){
-        try {
+        try{
             $customer = Customer::findOrFail($id);
-            $user = User::findOrFail($customer->user_id);
-            
             $customer->delete();
-            $user->delete();
-
-            return response()->json(['message' => 'Customer deleted successfully'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Customer delete failed', 'message' => $e->getMessage()], 500);
+            return response()->json(['message'=>'Customer deleted successfully']);
+        }catch(\Exception $e){
+            return response()->json(['error'=>'Customer delete failed','message'=> $e->getMessage()],500);
         }
     }
 }
