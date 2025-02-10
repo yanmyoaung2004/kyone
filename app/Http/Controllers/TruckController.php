@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OrderAssignTruck;
 use App\Models\Truck;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -88,6 +89,16 @@ class TruckController extends Controller
         return response()->json(['message' => 'Truck deleted successfully']);
     }
 
+    public function freeAndAssignedTrucks()
+    {
+        try {
+            $freeTrucks = Truck::where('status', 'free')->get();
+            $busyTrucks = Truck::where('status', 'busy')->get();
+            return response()->json(['freeTrucks' => $freeTrucks, 'busyTrucks' => $busyTrucks], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => "Failed to get free and assigned trucks!", 'message' => $e->getMessage()], 500);
+        }
+    }
 
     public function getTruckOrders($truckId)
 {

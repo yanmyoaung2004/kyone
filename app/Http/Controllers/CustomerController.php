@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Order;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -99,6 +101,15 @@ class CustomerController extends Controller
             return response()->json(['message'=>'Customer deleted successfully']);
         }catch(\Exception $e){
             return response()->json(['error'=>'Customer delete failed','message'=> $e->getMessage()],500);
+        }
+    }
+
+    public function histories($id){
+        try{
+            $histories = Order::where('customer_id',$id)->get();
+            return response()->json(["histories"=>$histories]);
+        }catch(Exception $e){
+            return response()->json(['error'=>"Get customer historeis failed",'message'=>$e->getMessage()]);
         }
     }
 }

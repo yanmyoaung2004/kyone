@@ -16,6 +16,7 @@ class Truck extends Model
      */
     protected $fillable = [
         'license_plate',
+        'status'
     ];
 
     /**

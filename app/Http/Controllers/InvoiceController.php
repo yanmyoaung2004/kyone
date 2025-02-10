@@ -107,4 +107,59 @@ class InvoiceController extends Controller
 
         return response()->json(['message' => 'Invoice deleted successfully']);
     }
-}
+
+    public function customerInvoices($customerId, Request $request){
+        $perPage = $request->input('per_page', 10); 
+        $page = $request->input('page', 1);
+        $invoices = Invoice::with('order')->where('customer_id', $customerId)->paginate($perPage, ['*'], 'page', $page);
+        // return response()->json($invoices);
+           return response()->json([
+            [
+                'invoiceId' => 'INV001',
+                'product' => [
+                    [
+                        'productName' => 'Wireless Mouse',
+                        'quantity' => 2,
+                        'totalAmount' => 1299.99,
+                    ],
+                    [
+                        'productName' => 'Laptop',
+                        'quantity' => 1,
+                        'totalAmount' => 1000,
+                    ],
+                ],
+                'totalAmount' => 2299.99,
+                'buyDate' => '2023-05-15',
+                'status' => 'Paid',
+            ],
+            [
+                'invoiceId' => 'INV002',
+                'product' => [
+                    [
+                        'productName' => 'Wireless Mouse',
+                        'quantity' => 3,
+                        'totalAmount' => 1299.99,
+                    ],
+                ],
+                'totalAmount' => 49.99,
+                'buyDate' => '2023-05-18',
+                'status' => 'Processing',
+            ],
+            [
+                'invoiceId' => 'INV003',
+                'product' => [
+                    [
+                        'productName' => 'Laptop Pro X',
+                        'quantity' => 2,
+                        'totalAmount' => 399.99,
+                    ],
+                ],
+                'totalAmount' => 399.99,
+                'buyDate' => '2023-05-20',
+                'status' => 'Shipped',
+            ],
+        ]);
+    }
+     
+    }
+
