@@ -84,3 +84,10 @@ Route::get('/orders', [OrderController::class, 'filterOrders']);
 
 //product filter
 Route::get('/products', [ProductController::class, 'filterProducts']);
+
+//Complaint filter
+Route::get('/complaints', [ComplaintController::class, 'filterComplaints']);
+
+//Truck filter
+Route::get('/tucks', [TruckController::class, 'filterTrucks']);
+

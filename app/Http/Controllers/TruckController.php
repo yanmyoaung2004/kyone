@@ -118,4 +118,38 @@ class TruckController extends Controller
     ]);
 }
 
+
+
+public function filterTrucks(Request $request)
+{
+    // Get the filter parameters (status in this case)
+    $filters = $request->query('filter', []);
+    
+    // Check if a valid status filter is provided
+    $validStatuses =["free","busy"];
+    
+    if (isset($filters['status']) && !in_array($filters['status'], $validStatuses)) {
+        return response()->json(['message' => 'Invalid status provided'], 400);
+    }
+    // Build the query
+    $query = Truck::query();
+
+    // Apply filters
+    if (isset($filters['status'])) {
+        $query->where('status', $filters['status']);
+    }
+
+    // Get the filtered orders
+    $trucks = $query->get();
+
+    // Check if no orders were found
+    if ($trucks->isEmpty()) {
+        return response()->json(['message' => 'No Complaint found for the given filter'], 404);
+    }
+    // Return the filtered orders
+    return response()->json([
+        'truck_count' => $trucks->count(),
+        'trucks' => $trucks// You can specify fields to return if needed
+    ]);
+}
 }
