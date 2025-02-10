@@ -36,7 +36,7 @@ models:
   Order:
     customer_id: id foreign
     location_id: id foreign
-    status: enum:pending,processing,completed,cancelled
+    status: enum:pending,inprogress,delivered,cancelled,delayed,
     total_price: decimal(10,2)
     eta: string nullable
 
@@ -66,3 +66,9 @@ models:
     address: string
     state: string
     city: string
+
+  EscalatedIssue:
+    description: string
+    order_id: id
+    driver_id: id
+    priority: enum:high,low,medium
