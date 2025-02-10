@@ -47,3 +47,6 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::get('/truck_assgiend_order/{id}',[OrderAssignTruckController::class,'assignedOrder']);
 
+
+
+Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueController::class);
