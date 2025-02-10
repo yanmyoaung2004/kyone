@@ -45,10 +45,13 @@ Route::post('/logout', [AuthController::class, 'logout']);
 //     Route::post('/logout', [AuthController::class, 'logout']);
 // });
 
+Route::get('/truck_assgiend_order/{id}',[OrderAssignTruckController::class,'assignedOrder']);
 
 //getDriverAndTruckByOrderID
 Route::get('/orders/{id}/truck-driver', [OrderController::class, 'getTruckAndDriverByOrderId']);
 
+//getTruckOrder
+Route::get('/truck/{id}/orders', [TruckController::class, 'getTruckOrders']);
 
 
 Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueController::class);

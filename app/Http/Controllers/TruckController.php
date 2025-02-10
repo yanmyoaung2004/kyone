@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderAssignTruck;
 use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -87,5 +88,23 @@ class TruckController extends Controller
         return response()->json(['message' => 'Truck deleted successfully']);
     }
 
-    
+
+    public function getTruckOrders($truckId)
+{
+    // Get orders assigned to this truck
+    $assignedOrders = OrderAssignTruck::where('truck_id', $truckId)
+        ->with(['order', 'driver'])
+        ->get();
+
+    if ($assignedOrders->isEmpty()) {
+        return response()->json(['message' => 'No orders found for this truck'], 404);
+    }
+
+    return response()->json([
+        'order_count' => $assignedOrders->count(),
+        'orders' => $assignedOrders->pluck('order'), // Get only order details
+        'driver' => $assignedOrders->first()->driver // Assuming one driver per truck
+    ]);
+}
+
 }
