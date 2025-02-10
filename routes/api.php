@@ -19,22 +19,24 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 Route::apiResource('orders', OrderController::class);
-Route::post('/customers',[CustomerController::class,'create']);
-Route::get('/customers',[CustomerController::class,'getAllCustomers']);
-Route::get('/customers/{id}',[CustomerController::class,'getCustomer']);
-Route::patch('/customers/{id}',[CustomerController::class,'update']);
-Route::delete('/customers/{id}',[CustomerController::class,'delete']);
+Route::post('/customers', [CustomerController::class, 'create']);
+Route::get('/customers', [CustomerController::class, 'getAllCustomers']);
+Route::get('/customers/{id}', [CustomerController::class, 'getCustomer']);
+Route::patch('/customers/{id}', [CustomerController::class, 'update']);
+Route::delete('/customers/{id}', [CustomerController::class, 'delete']);
+
+Route::get('/customers/detail/{id}', [CustomerController::class, 'getCustomerDetails']);
 
 Route::apiResource('categories', CategoryController::class);
-Route::apiResource('invoices',InvoiceController::class);
-Route::apiResource('dirvers',DriverController::class);
-Route::apiResource('trucks',TruckController::class);
-Route::apiResource('complaints',ComplaintController::class);
+Route::apiResource('invoices', InvoiceController::class);
+Route::apiResource('dirvers', DriverController::class);
+Route::apiResource('trucks', TruckController::class);
+Route::apiResource('complaints', ComplaintController::class);
 Route::apiResource('stocks', StockController::class);
-Route::get('/stocks/check_stock/{productId}',[StockController::class,'checkStock']);
+Route::get('/stocks/check_stock/{productId}', [StockController::class, 'checkStock']);
 Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class);
-Route::apiResource('orderAssignTrucks',OrderAssignTruckController::class);
+Route::apiResource('orderAssignTrucks', OrderAssignTruckController::class);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
