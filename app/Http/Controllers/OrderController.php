@@ -56,4 +56,14 @@ class OrderController extends Controller
 
         return response()->noContent();
     }
+
+    public function onProgressOrders()
+    {
+        try {
+            $orders = Order::where('status', 'inprogress')->get();
+            return response()->json(['orders' => $orders],200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Get on progress order failed', 'error' => $e->getMessage()],500);
+        }
+    }
 }
