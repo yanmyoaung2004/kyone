@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('trucks', function (Blueprint $table) {
             $table->id();
             $table->string('license_plate')->unique();
+            $table->enum('status',['free','busy']);
             $table->timestamps();
         });
 

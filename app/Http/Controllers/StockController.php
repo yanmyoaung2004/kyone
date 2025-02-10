@@ -112,4 +112,38 @@ class StockController extends Controller
             return response()->json(['error' => 'Failed to check stock', 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function stockCountByCategory($categoryId)
+    {
+        try {
+            $stocks = Stock::whereHas('product', function ($query) use ($categoryId) {
+                $query->where('category_id', $categoryId);
+            })->with('product')->get();
+
+            $stockCount = $stocks->groupBy('product_id')->map(function ($stockGroup) {
+                return $stockGroup->sum('quantity');
+            });
+
+            return response()->json($stockCount);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to calculate stock by category', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function lowStock($top){
+        try {
+            $lowStockProducts = Stock::with('product')
+            ->whereColumn('quantity', '<', 'safety_stock')
+            ->orderBy('quantity', 'asc')
+            ->take($top)
+            ->get();
+
+            return response()->json($lowStockProducts);
+        }catch(Exception $e){
+            return response()->json(['error'=>'Failed to get top '+$top+' low stock','message'=>$e->getMessage()]);
+        }
+    }
+
+    
+
 }
