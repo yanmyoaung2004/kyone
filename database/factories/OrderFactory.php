@@ -25,7 +25,6 @@ class OrderFactory extends Factory
             'customer_id' => Customer::factory(),
             'status' => fake()->randomElement(["pending","processing","completed","cancelled"]),
             'total_price' => fake()->word(),
-            'payment_status' => fake()->randomElement(["pending","paid","failed"]),
         ];
     }
 }

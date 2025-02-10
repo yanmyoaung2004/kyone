@@ -10,18 +10,18 @@ created:
     - database/factories/PaymentFactory.php
     - database/factories/InvoiceFactory.php
     - database/factories/ComplaintFactory.php
-    - database/migrations/2025_02_08_165340_create_customers_table.php
-    - database/migrations/2025_02_08_165341_create_products_table.php
-    - database/migrations/2025_02_08_165342_create_unitprices_table.php
-    - database/migrations/2025_02_08_165343_create_stocks_table.php
-    - database/migrations/2025_02_08_165344_create_categories_table.php
-    - database/migrations/2025_02_08_165345_create_trucks_table.php
-    - database/migrations/2025_02_08_165346_create_drivers_table.php
-    - database/migrations/2025_02_08_165347_create_orders_table.php
-    - database/migrations/2025_02_08_165348_create_payments_table.php
-    - database/migrations/2025_02_08_165349_create_invoices_table.php
-    - database/migrations/2025_02_08_165350_create_complaints_table.php
-    - database/migrations/2025_02_08_165351_create_order_product_table.php
+    - database/migrations/2025_02_09_043544_create_customers_table.php
+    - database/migrations/2025_02_09_043545_create_products_table.php
+    - database/migrations/2025_02_09_043546_create_unitprices_table.php
+    - database/migrations/2025_02_09_043547_create_stocks_table.php
+    - database/migrations/2025_02_09_043548_create_categories_table.php
+    - database/migrations/2025_02_09_043549_create_trucks_table.php
+    - database/migrations/2025_02_09_043550_create_drivers_table.php
+    - database/migrations/2025_02_09_043551_create_orders_table.php
+    - database/migrations/2025_02_09_043552_create_payments_table.php
+    - database/migrations/2025_02_09_043553_create_invoices_table.php
+    - database/migrations/2025_02_09_043554_create_complaints_table.php
+    - database/migrations/2025_02_09_043555_create_order_product_table.php
     - app/Models/Customer.php
     - app/Models/Product.php
     - app/Models/Unitprice.php
@@ -37,7 +37,7 @@ models:
     User: { name: string, email: string, email_verified_at: 'datetime nullable', password: string, remember_token: 'string nullable' }
     Customer: { user_id: 'id foreign', phone: string, address: string }
     Product: { name: string, description: 'text nullable', category_id: 'id foreign', unitprice_id: 'id foreign', relationships: { belongsToMany: Order } }
-    Unitprice: { price: 'decimal(10,2)' }
+    Unitprice: { price: 'decimal(10,2)', product_id: 'id foreign' }
     Stock: { product_id: 'id foreign', quantity: integer, safety_stock: integer }
     Category: { name: 'string unique' }
     Truck: { license_plate: 'string unique' }

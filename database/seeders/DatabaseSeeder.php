@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Carbon\Carbon;
 use CategorySeeder;
+use Database\Seeders\CategorySeeder as SeedersCategorySeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +34,8 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+
+
         // User::factory(10)->create();
         DB::table('products')->insert([
             [
@@ -53,6 +56,23 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+        DB::table('unitprices')->insert([
+            [
+                'id' => 1,
+                'product_id' => 1,
+                'price' => 200,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'id' => 2,
+                'product_id' => 1,
+                'price' => 200,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+        ]);
+
         DB::table('stocks')->insert([
             [
                 'id' => 1,
@@ -65,7 +85,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'product_id' => 1,
+                'product_id' => 2,
                 'quantity' => 10,
                 'safety_stock' => 10,
                 'unitprice_id' => 1,
@@ -75,8 +95,5 @@ class DatabaseSeeder extends Seeder
 
         ]);
 
-
-
-        //$this->call([CategorySeeder::class, ProductSeeder::class]);
     }
 }

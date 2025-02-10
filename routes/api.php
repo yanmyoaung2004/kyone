@@ -18,3 +18,5 @@ Route::apiResource('stocks', StockController::class);
 Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class);
 
+
+Route::apiResource('orders', App\Http\Controllers\OrderController::class);
