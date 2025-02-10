@@ -73,6 +73,13 @@ models:
     driver_id: id
     priority: enum:high,low,medium
 
+  Return:
+    order_id: id foreign
+    product_id: id foreign
+    quantity: integer
+    reason: string
+    status: enum:pending,inprogress,delivered,cancelled,delayed
+
 controllers:
-  EscalatedIssue:
+  Return:
     resource: api
