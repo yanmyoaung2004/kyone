@@ -72,3 +72,7 @@ models:
     order_id: id
     driver_id: id
     priority: enum:high,low,medium
+
+controllers:
+  EscalatedIssue:
+    resource: api

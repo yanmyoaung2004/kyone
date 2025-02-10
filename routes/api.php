@@ -45,3 +45,6 @@ Route::post('/logout', [AuthController::class, 'logout']);
 //     Route::post('/logout', [AuthController::class, 'logout']);
 // });
 
+
+
+Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueController::class);
