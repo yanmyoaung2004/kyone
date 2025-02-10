@@ -1,38 +1,42 @@
 <?php
+
 namespace Database\Seeders;
-use Illuminate\Database\Seeder;
+
 use App\Models\Order;
-use App\Models\Product;
-use App\Models\UnitPrice;
-use App\Models\OrderProduct;
-use Illuminate\Support\Facades\DB;
+use App\Models\Customer;
+use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class OrderSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        // Get all products and orders
-        $orders = Order::all();
-        $products = Product::all();
+        $faker = Faker::create();
 
-        // Loop through orders and associate them with products
-        foreach ($orders as $order) {
-            // Randomly pick products and their prices
-            $product = $products->random(); // Get a random product
-            $unitPrice = UnitPrice::where('product_id', $product->id)->first(); // Get the unit price for the product
+        // Loop to create 50 orders
+        foreach (range(1, 50) as $index) {
+            // Get a random customer ID
+            $customerId = Customer::inRandomOrder()->first()->id;
 
-            // Attach the product to the order in the order_product pivot table
-            DB::table('order_product')->insert([
-                'order_id' => $order->id,
-                'product_id' => $product->id,
-                'unitprice_id' => $unitPrice->id,
-                'quantity' => rand(1, 10), // Random quantity between 1 and 10
+            // Generate a random status
+            $status = $this->getRandomStatus();
+
+            // Generate a random total price between 100 and 1000
+            $totalPrice = $faker->randomFloat(2, 100, 1000);
+
+            // Insert the order
+            Order::create([
+                'customer_id' => $customerId,
+                'status' => $status,
+                'total_price' => $totalPrice,
             ]);
         }
+    }
+
+    // Helper function to randomly choose a status
+    private function getRandomStatus()
+    {
+        $statuses = ["pending", "inprogress", "delayed", "delivered", "cancelled"];
+        return $statuses[array_rand($statuses)];
     }
 }
