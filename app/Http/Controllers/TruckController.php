@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderAssignTruck;
 use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -86,6 +87,4 @@ class TruckController extends Controller
 
         return response()->json(['message' => 'Truck deleted successfully']);
     }
-
-    
 }

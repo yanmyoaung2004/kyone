@@ -45,3 +45,5 @@ Route::post('/logout', [AuthController::class, 'logout']);
 //     Route::post('/logout', [AuthController::class, 'logout']);
 // });
 
+Route::get('/truck_assgiend_order/{id}',[OrderAssignTruckController::class,'assignedOrder']);
+

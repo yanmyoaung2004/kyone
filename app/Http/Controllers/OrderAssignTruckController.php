@@ -62,4 +62,10 @@ class OrderAssignTruckController extends Controller
         OrderAssignTruck::findOrFail($id)->delete();
         return response()->json(['message' => 'Order assignment deleted successfully']);
     }
+
+    //get assigned order on truck by truck id
+    public function assignedOrder($id){ 
+        $truck = OrderAssignTruck::where('truck_id',$id)->with('order')->get();
+        return response()->json(['truck'=>$truck]);
+    }
 }
