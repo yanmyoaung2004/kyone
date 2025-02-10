@@ -21,6 +21,7 @@ class OrderStoreRequest extends FormRequest
     {
         return [
             'customer_id' => ['required', 'integer', 'exists:customers,id'],
+            'location_id' => ['required', 'integer', 'exists:locations,id'],
             'status' => ['required', 'in:pending,processing,completed,cancelled'],
             'total_price' => ['required', 'string'],
             'method' => ['required', 'in:credit_card,paypal,cash,bank_transfer'],

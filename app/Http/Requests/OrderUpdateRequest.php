@@ -21,8 +21,10 @@ class OrderUpdateRequest extends FormRequest
     {
         return [
             'customer_id' => ['integer', 'exists:customers,id'],
+            'location_id' => ['integer', 'exists:locations,id'],
             'status' => ['in:pending,processing,completed,cancelled'],
             'total_price' => ['string'],
+            'eta' => ['string'],
             'payment_status' => ['in:pending,paid,failed'],
         ];
     }
