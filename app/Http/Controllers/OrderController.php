@@ -56,7 +56,38 @@ class OrderController extends Controller
 
         return response()->noContent();
     }
+   public function getTruckAndDriverByOrderId($id)
+   {
+    
+        // Find the order or throw a 404 error if not found
+        $order = Order::findOrFail($id);
 
+        if($order){
+
+            // dd($order->orderAssignTruck);
+              // Check if the order has an assigned truck and driver
+        if (!$order->orderAssignTruck) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No truck or driver assigned to this order.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'order' => $order,
+            'truck' => $order->orderAssignTruck->truck,
+            'driver' => $order->orderAssignTruck->driver,
+        ], 200);
+        
+    } else{
+       
+            return response()->json([
+                'success' => false,
+                'message' => 'No Order Found.'
+            ], 404);
+        }
+    } 
     public function onProgressOrders()
     {
         try {
@@ -66,4 +97,38 @@ class OrderController extends Controller
             return response()->json(['message' => 'Get on progress order failed', 'error' => $e->getMessage()],500);
         }
     }
+
+    public function filterOrders(Request $request)
+    {
+        // Get the filter parameters (status in this case)
+        $filters = $request->query('filter', []);
+        
+        // Check if a valid status filter is provided
+        $validStatuses = ['pending', 'inprogress', 'delayed', 'delivered', 'cancelled'];
+        
+        if (isset($filters['status']) && !in_array($filters['status'], $validStatuses)) {
+            return response()->json(['message' => 'Invalid status provided'], 400);
+        }
+        // Build the query
+        $query = Order::query();
+
+        // Apply filters
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        // Get the filtered orders
+        $orders = $query->get();
+
+        // Check if no orders were found
+        if ($orders->isEmpty()) {
+            return response()->json(['message' => 'No orders found for the given filter'], 404);
+        }
+        // Return the filtered orders
+        return response()->json([
+            'order_count' => $orders->count(),
+            'orders' => $orders // You can specify fields to return if needed
+        ]);
+    }
+
 }

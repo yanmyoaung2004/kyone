@@ -66,4 +66,53 @@ class ProductController extends Controller
 
         return response()->json($products);
     }
+
+
+    public function filterProducts(Request $request)
+    {
+        // Get the filters from the query string
+        $filters = $request->query();
+
+        // Build the query to fetch products
+        $query = Product::query();
+
+        // Filter by category name if provided
+        if (isset($filters['filter']['category.name'])) {
+            $categoryName = $filters['filter']['category.name'];
+            $query->whereHas('category', function ($query) use ($categoryName) {
+                $query->where('name', 'like', '%' . $categoryName . '%');
+            });
+        }
+
+        // Filter by price range if provided
+        if (isset($filters['filter']['pricerange'])) {
+            $priceRange = explode(',', $filters['filter']['pricerange']);
+            if (count($priceRange) == 2) {
+                $minPrice = $priceRange[0];
+                $maxPrice = $priceRange[1];
+                $query->whereHas('unitprice', function ($query) use ($minPrice, $maxPrice) {
+                    $query->whereBetween('price', [$minPrice, $maxPrice]);
+                });
+            }
+        }
+
+        // Get the filtered products
+        $products = $query->get();
+
+        // Check if no products were found
+    if ($products->isEmpty()) {
+        return response()->json([
+            'message' => 'No products found for the given filter criteria.'
+        ], 404); // Return a 404 response if no products are found
+    }
+    
+
+        // Return the filtered products as a JSON response
+        return response()->json([
+            'product_count' => $products->count(),
+            'products' => $products
+        ]);
+    }
 }
+
+

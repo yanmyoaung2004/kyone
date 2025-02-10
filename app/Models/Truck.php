@@ -28,5 +28,9 @@ class Truck extends Model
         'id' => 'integer',
     ];
 
-    // public fucntions 
+    public function assignedOrders()
+    {
+        return $this->hasMany(OrderAssignTruck::class, 'truck_id');
+    }
+
 }

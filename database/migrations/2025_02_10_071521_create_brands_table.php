@@ -11,24 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
-
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('brands', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained();
-            $table->enum('status', ["pending", "inprogress", "delayed","delivered", "cancelled"]);
-            $table->string('total_price');
+            $table->string('name');
             $table->timestamps();
         });
-
-        Schema::enableForeignKeyConstraints();
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('brands');
     }
-    
 };

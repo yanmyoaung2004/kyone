@@ -99,4 +99,23 @@ class TruckController extends Controller
             return response()->json(['error' => "Failed to get free and assigned trucks!", 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function getTruckOrders($truckId)
+{
+    // Get orders assigned to this truck
+    $assignedOrders = OrderAssignTruck::where('truck_id', $truckId)
+        ->with(['order', 'driver'])
+        ->get();
+
+    if ($assignedOrders->isEmpty()) {
+        return response()->json(['message' => 'No orders found for this truck'], 404);
+    }
+
+    return response()->json([
+        'order_count' => $assignedOrders->count(),
+        'orders' => $assignedOrders->pluck('order'), // Get only order details
+        'driver' => $assignedOrders->first()->driver // Assuming one driver per truck
+    ]);
+}
+
 }
