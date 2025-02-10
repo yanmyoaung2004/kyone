@@ -35,8 +35,10 @@ models:
 
   Order:
     customer_id: id foreign
-    status: enum:pending,processing,completed,cancelled
+    location_id: id foreign
+    status: enum:pending,inprogress,delivered,cancelled,delayed,
     total_price: decimal(10,2)
+    eta: string nullable
 
     relationships:
       hasOne: Payment, Invoice
@@ -59,3 +61,18 @@ models:
     description: text
     status: enum:open,in_progress,resolved,closed
     type: enum:delayed,faulty,wrong,missing
+
+  Location:
+    address: string
+    state: string
+    city: string
+
+  EscalatedIssue:
+    description: string
+    order_id: id
+    driver_id: id
+    priority: enum:high,low,medium
+
+controllers:
+  EscalatedIssue:
+    resource: api

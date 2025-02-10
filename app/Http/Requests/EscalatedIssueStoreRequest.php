@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OrderUpdateRequest extends FormRequest
+class EscalatedIssueStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,12 +20,10 @@ class OrderUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => ['integer', 'exists:customers,id'],
-            'location_id' => ['integer', 'exists:locations,id'],
-            'status' => ['in:pending,inprogress,delivered,cancelled,delayed'],
-            'total_price' => ['string'],
-            'eta' => ['string'],
-            'payment_status' => ['in:pending,paid,failed'],
+            'description' => ['required', 'string'],
+            'order_id' => ['required', 'integer', 'exists:orders,id'],
+            'driver_id' => ['required', 'integer', 'exists:drivers,id'],
+            'priority' => ['required', 'in:high,low,medium'],
         ];
     }
 }

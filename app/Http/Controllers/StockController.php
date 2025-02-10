@@ -146,4 +146,14 @@ class StockController extends Controller
             return response()->json(['error' => 'Failed to delete stock', 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function checkStock($productId)
+    {
+        try {
+            $stockCount = Stock::where('product_id', $productId)->count();
+            return response()->json(['stock_count' => $stockCount]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to check stock', 'message' => $e->getMessage()], 500);
+        }
+    }
 }
