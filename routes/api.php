@@ -46,5 +46,9 @@ Route::post('/logout', [AuthController::class, 'logout']);
 // });
 
 
+//getDriverAndTruckByOrderID
+Route::get('/orders/{id}/truck-driver', [OrderController::class, 'getTruckAndDriverByOrderId']);
+
+
 
 Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueController::class);

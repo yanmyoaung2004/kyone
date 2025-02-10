@@ -26,4 +26,5 @@ class Truck extends Model
     protected $casts = [
         'id' => 'integer',
     ];
+    
 }

@@ -56,4 +56,40 @@ class OrderController extends Controller
 
         return response()->noContent();
     }
-}
+public function getTruckAndDriverByOrderId($id)
+{
+    
+        // Find the order or throw a 404 error if not found
+        $order = Order::findOrFail($id);
+
+        if($order){
+
+            // dd($order->orderAssignTruck);
+              // Check if the order has an assigned truck and driver
+        if (!$order->orderAssignTruck) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No truck or driver assigned to this order.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'order' => $order,
+            'truck' => $order->orderAssignTruck->truck,
+            'driver' => $order->orderAssignTruck->driver,
+        ], 200);
+        
+    } else{
+       
+            return response()->json([
+                'success' => false,
+                'message' => 'No Order Found.'
+            ], 404);
+        }
+    } 
+    }
+
+
+
+
