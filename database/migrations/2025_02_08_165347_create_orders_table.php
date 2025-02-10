@@ -23,7 +23,6 @@ return new class extends Migration
 
         Schema::enableForeignKeyConstraints();
     }
-
     /**
      * Reverse the migrations.
      */
@@ -31,4 +30,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('orders');
     }
+    
 };

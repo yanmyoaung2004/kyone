@@ -59,3 +59,6 @@ Route::get('orders/on_progress',[OrderController::class,'onProgressOrders']);
 
 
 Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueController::class);
+
+//Order filter
+Route::get('/orders', [OrderController::class, 'filterOrders']);
