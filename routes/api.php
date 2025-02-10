@@ -101,3 +101,8 @@ Route::get('/orders', [OrderController::class, 'filterOrders']);
 Route::get('/products', [ProductController::class, 'filterProducts']);
 
 Route::apiResource('returns', App\Http\Controllers\ReturnController::class);
+//Complaint filter
+Route::get('/complaints', [ComplaintController::class, 'filterComplaints']);
+
+//Truck filter
+Route::get('/tucks', [TruckController::class, 'filterTrucks']);
