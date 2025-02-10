@@ -25,27 +25,42 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('orders', OrderController::class);
 
 //Customer
-Route::post('/customers',[CustomerController::class,'create']);
-Route::get('/customers',[CustomerController::class,'getAllCustomers']);
-Route::get('/customers/{id}/histories',[CustomerController::class,'histories']);
-Route::get('/customers/{id}',[CustomerController::class,'getCustomer']);
-Route::patch('/customers/{id}',[CustomerController::class,'update']);
-Route::delete('/customers/{id}',[CustomerController::class,'delete']);
+Route::post('/customers', [CustomerController::class, 'create']);
+Route::get('/customers', [CustomerController::class, 'getAllCustomers']);
+Route::get('/customers/{id}/histories', [CustomerController::class, 'histories']);
+Route::get('/customers/{id}', [CustomerController::class, 'getCustomer']);
+Route::patch('/customers/{id}', [CustomerController::class, 'update']);
+Route::delete('/customers/{id}', [CustomerController::class, 'delete']);
 
 Route::apiResource('categories', CategoryController::class);
-Route::apiResource('brands',BrandController::class);
-Route::apiResource('invoices',InvoiceController::class);
-Route::get('/customers/{customerId}/invoices',[InvoiceController::class,'customerInvoices']);
-Route::apiResource('dirvers',DriverController::class);
-Route::apiResource('trucks',TruckController::class);
-Route::apiResource('complaints',ComplaintController::class);
+Route::apiResource('brands', BrandController::class);
+Route::apiResource('invoices', InvoiceController::class);
+Route::get('/customers/{customerId}/invoices', [InvoiceController::class, 'customerInvoices']);
+Route::apiResource('dirvers', DriverController::class);
+Route::apiResource('trucks', TruckController::class);
+Route::apiResource('complaints', ComplaintController::class);
 Route::apiResource('stocks', StockController::class);
+Route::post('/customers', [CustomerController::class, 'create']);
+Route::get('/customers', [CustomerController::class, 'getAllCustomers']);
+Route::get('/customers/{id}', [CustomerController::class, 'getCustomer']);
+Route::patch('/customers/{id}', [CustomerController::class, 'update']);
+Route::delete('/customers/{id}', [CustomerController::class, 'delete']);
+
+Route::get('/customers/detail/{id}', [CustomerController::class, 'getCustomerDetails']);
+
+Route::apiResource('categories', CategoryController::class);
+Route::apiResource('invoices', InvoiceController::class);
+Route::apiResource('dirvers', DriverController::class);
+Route::apiResource('trucks', TruckController::class);
+Route::apiResource('complaints', ComplaintController::class);
+Route::apiResource('stocks', StockController::class);
+Route::get('/stocks/check_stock/{productId}', [StockController::class, 'checkStock']);
 Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class);
-Route::apiResource('orderAssignTrucks',OrderAssignTruckController::class);
+Route::apiResource('orderAssignTrucks', OrderAssignTruckController::class);
 
 
-Route::get('/stocks/check_stock/{productId}',[StockController::class,'checkStock']);
+Route::get('/stocks/check_stock/{productId}', [StockController::class, 'checkStock']);
 
 //Auth
 Route::post('/register', [AuthController::class, 'register']);
@@ -56,25 +71,25 @@ Route::post('/logout', [AuthController::class, 'logout']);
 //     Route::post('/logout', [AuthController::class, 'logout']);
 // });
 
-Route::get('/truck_assgiend_order/{id}',[OrderAssignTruckController::class,'assignedOrder']);
-Route::get('/orders/on_progress',[OrderController::class,'onProgressOrders']);
+Route::get('/truck_assgiend_order/{id}', [OrderAssignTruckController::class, 'assignedOrder']);
+Route::get('/orders/on_progress', [OrderController::class, 'onProgressOrders']);
 
 
 Route::apiResource('escalated-issues', EscalatedIssueController::class);
 
-Route::get('/sales/order_count_by_year/{year}',[SaleController::class,'orderCountByYear']);
-Route::get('/sales/order_count_by_week/{week}',[SaleController::class,'orderCountByWeek']);
-Route::get('/sales/order_count_by_day/{day}',[SaleController::class,'orderCountByDay']);
+Route::get('/sales/order_count_by_year/{year}', [SaleController::class, 'orderCountByYear']);
+Route::get('/sales/order_count_by_week/{week}', [SaleController::class, 'orderCountByWeek']);
+Route::get('/sales/order_count_by_day/{day}', [SaleController::class, 'orderCountByDay']);
 
-Route::get('/warehouse/low_stocks/{top}',[StockController::class,'lowStock']);
-Route::get('/warehouse/stock_count_by_category/{categoryId}',[StockController::class,'checkStock']);
-Route::get('/warehouse/free_and_assigned_trucks',[TruckController::class,'freeAndAssignedTrucks']);
+Route::get('/warehouse/low_stocks/{top}', [StockController::class, 'lowStock']);
+Route::get('/warehouse/stock_count_by_category/{categoryId}', [StockController::class, 'checkStock']);
+Route::get('/warehouse/free_and_assigned_trucks', [TruckController::class, 'freeAndAssignedTrucks']);
 //getDriverAndTruckByOrderID
 Route::get('/orders/{id}/truck-driver', [OrderController::class, 'getTruckAndDriverByOrderId']);
 
 //getTruckOrder
 Route::get('/truck/{id}/orders', [TruckController::class, 'getTruckOrders']);
-Route::get('orders/on_progress',[OrderController::class,'onProgressOrders']);
+Route::get('orders/on_progress', [OrderController::class, 'onProgressOrders']);
 
 
 Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueController::class);
@@ -84,3 +99,5 @@ Route::get('/orders', [OrderController::class, 'filterOrders']);
 
 //product filter
 Route::get('/products', [ProductController::class, 'filterProducts']);
+
+Route::apiResource('returns', App\Http\Controllers\ReturnController::class);

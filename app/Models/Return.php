@@ -5,9 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Customer extends Model
+class Return extends Model
 {
     use HasFactory;
 
@@ -17,9 +16,11 @@ class Customer extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
-        'phone',
-        'address',
+        'order_id',
+        'product_id',
+        'quantity',
+        'reason',
+        'status',
     ];
 
     /**
@@ -29,15 +30,17 @@ class Customer extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'user_id' => 'integer',
+        'order_id' => 'integer',
+        'product_id' => 'integer',
     ];
 
-    public function user(): BelongsTo
+    public function order(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Order::class);
     }
-    public function orders(): HasMany
+
+    public function product(): BelongsTo
     {
-        return $this->hasMany(Order::class);
+        return $this->belongsTo(Product::class);
     }
 }
