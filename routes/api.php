@@ -19,6 +19,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 Route::apiResource('orders', OrderController::class);
+
+//Customer
 Route::post('/customers',[CustomerController::class,'create']);
 Route::get('/customers',[CustomerController::class,'getAllCustomers']);
 Route::get('/customers/{id}',[CustomerController::class,'getCustomer']);
@@ -31,14 +33,16 @@ Route::apiResource('dirvers',DriverController::class);
 Route::apiResource('trucks',TruckController::class);
 Route::apiResource('complaints',ComplaintController::class);
 Route::apiResource('stocks', StockController::class);
-Route::get('/stocks/check_stock/{productId}',[StockController::class,'checkStock']);
 Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class);
 Route::apiResource('orderAssignTrucks',OrderAssignTruckController::class);
 
+
+Route::get('/stocks/check_stock/{productId}',[StockController::class,'checkStock']);
+
+//Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
 Route::post('/logout', [AuthController::class, 'logout']);
 
 // Route::middleware('auth:sanctum')->group(function () {
@@ -46,7 +50,6 @@ Route::post('/logout', [AuthController::class, 'logout']);
 // });
 
 Route::get('/truck_assgiend_order/{id}',[OrderAssignTruckController::class,'assignedOrder']);
-
 //getDriverAndTruckByOrderID
 Route::get('/orders/{id}/truck-driver', [OrderController::class, 'getTruckAndDriverByOrderId']);
 
