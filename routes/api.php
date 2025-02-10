@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\InvoiceController;
@@ -28,6 +29,7 @@ Route::patch('/customers/{id}',[CustomerController::class,'update']);
 Route::delete('/customers/{id}',[CustomerController::class,'delete']);
 
 Route::apiResource('categories', CategoryController::class);
+Route::apiResource('brands',BrandController::class);
 Route::apiResource('invoices',InvoiceController::class);
 Route::apiResource('dirvers',DriverController::class);
 Route::apiResource('trucks',TruckController::class);
@@ -62,3 +64,6 @@ Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueContro
 
 //Order filter
 Route::get('/orders', [OrderController::class, 'filterOrders']);
+
+//product filter
+Route::get('/products', [ProductController::class, 'filterProducts']);

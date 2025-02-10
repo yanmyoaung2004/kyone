@@ -109,7 +109,6 @@ class OrderController extends Controller
         if (isset($filters['status']) && !in_array($filters['status'], $validStatuses)) {
             return response()->json(['message' => 'Invalid status provided'], 400);
         }
-
         // Build the query
         $query = Order::query();
 
