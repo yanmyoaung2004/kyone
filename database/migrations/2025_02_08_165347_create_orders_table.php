@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained();
             $table->enum('status', ["pending", "inprogress", "delayed","delivered", "cancelled"]);
             $table->string('total_price');
+            $table->foreignId('location_id')->constrained();
             $table->timestamps();
         });
 

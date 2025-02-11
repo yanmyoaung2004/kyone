@@ -100,7 +100,7 @@ class TruckController extends Controller
         }
     }
 
-    public function getTruckOrders($truckId)
+public function getTruckOrders($truckId)
 {
     // Get orders assigned to this truck
     $assignedOrders = OrderAssignTruck::where('truck_id', $truckId)

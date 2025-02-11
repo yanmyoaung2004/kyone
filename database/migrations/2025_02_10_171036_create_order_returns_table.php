@@ -11,9 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
-
-        Schema::create('returns', function (Blueprint $table) {
+        Schema::create('order_returns', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained();
             $table->foreignId('product_id')->constrained();
@@ -22,8 +20,6 @@ return new class extends Migration
             $table->enum('status', ["pending","inprogress","delivered","cancelled","delayed"]);
             $table->timestamps();
         });
-
-        Schema::enableForeignKeyConstraints();
     }
 
     /**
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('returns');
+        Schema::dropIfExists('order_returns');
     }
 };

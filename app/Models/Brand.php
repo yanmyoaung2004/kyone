@@ -18,4 +18,8 @@ class Brand extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function orderRetrun(){
+        return $this->hasMany(OrderReturn::class);
+    }
+
 }

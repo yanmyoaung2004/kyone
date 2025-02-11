@@ -65,4 +65,8 @@ class Order extends Model
     {
         return $this->hasOne(OrderAssignTruck::class);
     }
+
+    public function orderRetrun(){
+        return $this->hasMany(OrderReturn::class);
+    }
 }
