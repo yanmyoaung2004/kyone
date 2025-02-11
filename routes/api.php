@@ -89,3 +89,4 @@ Route::get('/complaints', [ComplaintController::class, 'filterComplaints']);
 
 //Truck filter
 Route::get('/tucks', [TruckController::class, 'filter']);
+
