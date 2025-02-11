@@ -8,24 +8,37 @@ use Illuminate\Validation\ValidationException;
 class OrderAssignTruckController extends Controller
 {
     public function store(Request $request)
-    {
-        try{
-
+{
+    try {
         $validated = $request->validate([
-            'order_id' => 'required|exists:orders,id',
+            'orders' => 'required|array', // Ensure order_id is an array
+            'orders.*' => 'exists:orders,id', // Validate each order_id in the array
             'driver_id' => 'required|exists:drivers,id',
             'truck_id' => 'required|exists:trucks,id',
         ]);
 
-        $orderAssign = OrderAssignTruck::create($validated);
-        return response()->json(['message' => 'Order assigned successfully', 'order_assign_truck' => $orderAssign], 201);
+        $assignedOrders = [];
+
+        foreach ($validated['orders'] as $orderId) {
+            $assignedOrders[] = OrderAssignTruck::create([
+                'order_id' => $orderId,
+                'driver_id' => $validated['driver_id'],
+                'truck_id' => $validated['truck_id'],
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Orders assigned successfully',
+            'order_assign_trucks' => $assignedOrders
+        ], 201);
+
     } catch (ValidationException $e) {
         return response()->json([
-            'message'=> $e->errors(),
-            
+            'message' => $e->errors(),
         ], 422);
     }
-    }
+}
+
 
     public function index()
     {

@@ -1,10 +1,8 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use App\Models\User;
+use App\Models\Driver;
+use App\Models\User; // Assuming User model is being used for user_id reference
 use Faker\Factory as Faker;
 
 class DriverSeeder extends Seeder
@@ -13,17 +11,18 @@ class DriverSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Get random user IDs (assuming they exist)
-        $userIds = User::pluck('id')->toArray();
-
+        // Loop to create 20 drivers
         foreach (range(1, 20) as $index) {
-            DB::table('drivers')->insert([
-                'user_id' => $faker->randomElement($userIds),
-                'driver_license' => $faker->unique()->bothify('DL-######'),
-                'nrc_number' => $faker->unique()->bothify('NR-######'),
-                'phone' => $faker->phoneNumber(),
-                'created_at' => now(),
-                'updated_at' => now(),
+            // Get a random user ID (user_id) from the User model
+            $userId = User::inRandomOrder()->first()->id; // Assuming there is a user table
+
+            // Create the driver
+            Driver::create([
+                'user_id' => $userId,
+                'driver_license' => $faker->unique()->word,
+                'nrc_number' => $faker->unique()->word,
+                'phone' => $faker->phoneNumber,
+                'status' => $faker->randomElement(['free', 'busy']),
             ]);
         }
     }

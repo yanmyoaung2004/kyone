@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('driver_license')->unique();
             $table->string('nrc_number')->unique();
             $table->string('phone');
-            $table->enum('status',['free','busy']);
+             $table->enum('status',['free','busy']);
             $table->timestamps();
         });
 
