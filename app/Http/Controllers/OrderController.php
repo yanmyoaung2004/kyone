@@ -96,39 +96,66 @@ class OrderController extends Controller
             return response()->json(['message' => 'Get on progress order failed', 'error' => $e->getMessage()], 500);
         }
     }
-
     public function filterOrders(Request $request)
     {
-        // Get the filter parameters (status in this case)
+        // Get the filter parameters (status and location in this case)
         $filters = $request->query('filter', []);
-
+    
         // Check if a valid status filter is provided
         $validStatuses = ['pending', 'inprogress', 'delayed', 'delivered', 'cancelled'];
-
-        if (isset($filters['status']) && !in_array($filters['status'], $validStatuses)) {
-            return response()->json(['message' => 'Invalid status provided'], 400);
+    
+        if (isset($filters['status']) && !empty($filters['status'])) {
+            $statuses = explode(',', $filters['status']); // Split by commas if multiple statuses are provided
+    
+            // Validate each status in the array
+            foreach ($statuses as $status) {
+                if (!in_array($status, $validStatuses)) {
+                    return response()->json(['message' => 'Invalid status provided'], 400);
+                }
+            }
         }
+    
+        // Check if a valid location filter is provided
+        if (isset($filters['location']) && !empty($filters['location'])) {
+            $locations = explode(',', $filters['location']); // Split by commas if multiple locations are provided
+    
+            // Validate each location in the array (ensure they are numeric)
+            foreach ($locations as $location) {
+                if (!is_numeric($location)) {
+                    return response()->json(['message' => 'Invalid location ID provided'], 400);
+                }
+            }
+        }
+    
         // Build the query
         $query = Order::query();
-
-        // Apply filters
-        if (isset($filters['status'])) {
-            $query->where('status', $filters['status']);
+    
+        // Apply status filter (if provided)
+        if (isset($filters['status']) && !empty($filters['status'])) {
+            $query->whereIn('status', $statuses);
         }
-
+    
+        // Apply location filter (if provided)
+        if (isset($filters['location']) && !empty($filters['location'])) {
+            $query->whereIn('location_id', $locations);
+        }
+    
         // Get the filtered orders
         $orders = $query->get();
 
-        $orders->load('orderAssignTruck.truck', 'orderAssignTruck.driver');
-
+        $orders->load('orderAssignTruck.truck','orderAssignTruck.driver');
+    
         // Check if no orders were found
         if ($orders->isEmpty()) {
             return response()->json(['message' => 'No orders found for the given filter'], 404);
         }
+    
         // Return the filtered orders
         return response()->json([
             'order_count' => $orders->count(),
             'orders' => $orders // You can specify fields to return if needed
         ]);
     }
+    
+    
 }
