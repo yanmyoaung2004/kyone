@@ -74,13 +74,10 @@ models:
     status: enum:pending,inprogress,resolved
     priority: enum:high,low,medium
 
-  Return:
+  OrderReturn:
     order_id: id foreign
     product_id: id foreign
+    complaint_id: id foreign
     quantity: integer
     reason: string
     status: enum:pending,inprogress,delivered,cancelled,delayed
-
-controllers:
-  Return:
-    resource: api

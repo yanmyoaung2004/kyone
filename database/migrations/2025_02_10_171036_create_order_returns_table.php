@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained();
             $table->integer('quantity');
             $table->string('reason');
-            $table->enum('status', ["pending","inprogress","delivered","cancelled","delayed"]);
+            $table->enum('status', ["pending", "inprogress", "delivered", "cancelled", "delayed"]);
             $table->timestamps();
         });
     }
