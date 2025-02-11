@@ -8,22 +8,37 @@ use Illuminate\Validation\ValidationException;
 class OrderAssignTruckController extends Controller
 {
     public function store(Request $request)
-    {
-        try{
-            $validated = $request->validate([
-                'order_id' => 'required|exists:orders,id',
-                'driver_id' => 'required|exists:drivers,id',
-                'truck_id' => 'required|exists:trucks,id',
+{
+    try {
+        $validated = $request->validate([
+            'orders' => 'required|array', // Ensure order_id is an array
+            'orders.*' => 'exists:orders,id', // Validate each order_id in the array
+            'driver_id' => 'required|exists:drivers,id',
+            'truck_id' => 'required|exists:trucks,id',
+        ]);
+
+        $assignedOrders = [];
+
+        foreach ($validated['orders'] as $orderId) {
+            $assignedOrders[] = OrderAssignTruck::create([
+                'order_id' => $orderId,
+                'driver_id' => $validated['driver_id'],
+                'truck_id' => $validated['truck_id'],
             ]);
-            $orderAssign = OrderAssignTruck::create($validated);
-            return response()->json(['message' => 'Order assigned successfully', 'order_assign_truck' => $orderAssign], 201);
+        }
+
+        return response()->json([
+            'message' => 'Orders assigned successfully',
+            'order_assign_trucks' => $assignedOrders
+        ], 201);
+
     } catch (ValidationException $e) {
         return response()->json([
-            'message'=> $e->errors(),
-
+            'message' => $e->errors(),
         ], 422);
     }
-    }
+}
+
 
     public function index()
     {
@@ -59,5 +74,11 @@ class OrderAssignTruckController extends Controller
     {
         OrderAssignTruck::findOrFail($id)->delete();
         return response()->json(['message' => 'Order assignment deleted successfully']);
+    }
+
+
+    public function assignedOrder($id){
+        $truck = OrderAssignTruck::where('truck_id',$id)->with('order')->get();
+        return response()->json(['truck'=>$truck]);
     }
 }

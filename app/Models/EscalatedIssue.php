@@ -19,6 +19,7 @@ class EscalatedIssue extends Model
         'description',
         'order_id',
         'driver_id',
+        'status',
         'priority',
     ];
 

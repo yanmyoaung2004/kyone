@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
-
-        Schema::create('invoices', function (Blueprint $table) {
+        Schema::create('order_returns', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained();
-            $table->string('invoice_number')->unique();
-            $table->string('total_amount');
+            $table->foreignId('product_id')->constrained();
+            $table->foreignId('complaint_id')->constrained()->nullable();
+            $table->integer('quantity');
+            $table->string('reason');
+            $table->enum('status', ["pending", "inprogress", "delivered", "cancelled", "delayed"]);
             $table->timestamps();
         });
-
-        Schema::enableForeignKeyConstraints();
     }
 
     /**
@@ -29,8 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoices');
+        Schema::dropIfExists('order_returns');
     }
-
-    
 };

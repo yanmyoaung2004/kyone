@@ -23,7 +23,12 @@ class OrderAssignTruck extends Model
     }
 
     public function truck()
+    
     {
         return $this->belongsTo(Truck::class);
     }
+
+  
+
+    
 }

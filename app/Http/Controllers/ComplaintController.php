@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Complaint;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -71,8 +72,7 @@ class ComplaintController extends Controller
         return response()->json(['message' => 'Complaint updated successfully', 'complaint' => $complaint], 200);
     } catch (ValidationException $e) {
         return response()->json([
-            'message'=> $e->errors(),
-            
+            'message'=> $e->errors(),    
         ], 422);
     }
     }
@@ -88,4 +88,40 @@ class ComplaintController extends Controller
         $complaint->delete();
         return response()->json(['message' => 'Complaint deleted successfully'], 200);
     }
+
+
+    
+    public function filterComplaint(Request $request)
+    {
+        // Get the filter parameters (status in this case)
+        $filters = $request->query('filter', []);
+        
+        // Check if a valid status filter is provided
+        $validStatuses =["open","in_progress","resolved","closed"];
+        
+        if (isset($filters['status']) && !in_array($filters['status'], $validStatuses)) {
+            return response()->json(['message' => 'Invalid status provided'], 400);
+        }
+        // Build the query
+        $query = Complaint::query();
+
+        // Apply filters
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        // Get the filtered orders
+        $complaints = $query->get();
+
+        // Check if no orders were found
+        if ($complaints->isEmpty()) {
+            return response()->json(['message' => 'No Complaint found for the given filter'], 404);
+        }
+        // Return the filtered orders
+        return response()->json([
+            'complaint_count' => $complaints->count(),
+            'complaints' => $complaints// You can specify fields to return if needed
+        ]);
+    }
+
 }

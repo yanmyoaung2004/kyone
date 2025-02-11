@@ -36,4 +36,10 @@ class Driver extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
+    public function OrderAssingTruck()
+    {
+        return $this->hasMany(OrderAssignTruck::class, 'driver_id');
+    }
 }

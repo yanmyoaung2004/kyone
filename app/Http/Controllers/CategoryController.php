@@ -37,7 +37,8 @@ class CategoryController extends Controller
 
             return response()->json([
                 'message' => 'Category created successfully!',
-                'category' => $category
+                'id' => $category->id,
+                'name'=>$category->name
             ], 201);
 
         } catch (ValidationException $e) {
@@ -57,7 +58,7 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        return response()->json($category);
+        return response()->json($category->only(['id','name']));
     }
 
     // Update a category

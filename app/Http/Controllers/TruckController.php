@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OrderAssignTruck;
 use App\Models\Truck;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -88,25 +89,67 @@ class TruckController extends Controller
         return response()->json(['message' => 'Truck deleted successfully']);
     }
 
-
-    public function getTruckOrders($truckId)
+    public function freeAndAssignedTrucks()
     {
-        // Get orders assigned to this truck
-        $truck = Truck::find($truckId);
-        $assignedOrders = OrderAssignTruck::where('truck_id', $truckId)
-            ->with(['order.customer.user', 'order.location', 'order.products.unitprice', 'driver.user'])
-            ->get();
-
-        if ($assignedOrders->isEmpty()) {
-            return response()->json(['message' => 'No orders found for this truck'], 404);
+        try {
+            $freeTrucks = Truck::where('status', 'free')->get();
+            $busyTrucks = Truck::where('status', 'busy')->get();
+            return response()->json(['freeTrucks' => $freeTrucks, 'busyTrucks' => $busyTrucks], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => "Failed to get free and assigned trucks!", 'message' => $e->getMessage()], 500);
         }
-
-        return response()->json([
-            'truck' => $truck,
-            'order_count' => $assignedOrders->count(),
-            'orders' => $assignedOrders->pluck('order'), // Get only order details
-            'driver' => $assignedOrders->first()->driver // Assuming one driver per truck
-        ]);
     }
 
+public function getTruckOrders($truckId)
+{
+    // Get orders assigned to this truck
+    $assignedOrders = OrderAssignTruck::where('truck_id', $truckId)
+        ->with(['order', 'driver'])
+        ->get();
+
+    if ($assignedOrders->isEmpty()) {
+        return response()->json(['message' => 'No orders found for this truck'], 404);
+    }
+
+    return response()->json([
+        'order_count' => $assignedOrders->count(),
+        'orders' => $assignedOrders->pluck('order'), // Get only order details
+        'driver' => $assignedOrders->first()->driver // Assuming one driver per truck
+    ]);
+}
+
+
+
+public function filterTrucks(Request $request)
+{
+    // Get the filter parameters (status in this case)
+    $filters = $request->query('filter', []);
+
+    // Check if a valid status filter is provided
+    $validStatuses =["free","busy"];
+
+    if (isset($filters['status']) && !in_array($filters['status'], $validStatuses)) {
+        return response()->json(['message' => 'Invalid status provided'], 400);
+    }
+    // Build the query
+    $query = Truck::query();
+
+    // Apply filters
+    if (isset($filters['status'])) {
+        $query->where('status', $filters['status']);
+    }
+
+    // Get the filtered orders
+    $trucks = $query->get();
+
+    // Check if no orders were found
+    if ($trucks->isEmpty()) {
+        return response()->json(['message' => 'No Complaint found for the given filter'], 404);
+    }
+    // Return the filtered orders
+    return response()->json([
+        'truck_count' => $trucks->count(),
+        'trucks' => $trucks// You can specify fields to return if needed
+    ]);
+}
 }
