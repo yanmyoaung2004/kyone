@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UnitpriceController;
+use App\Models\City;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,6 +35,7 @@ Route::patch('/customers/{id}', [CustomerController::class, 'update']);
 Route::delete('/customers/{id}', [CustomerController::class, 'delete']);
 
 Route::apiResource('categories', CategoryController::class);
+Route::apiResource('cities', CityController::class);
 Route::apiResource('brands', BrandController::class);
 Route::apiResource('invoices', InvoiceController::class);
 Route::get('/customers/{customerId}/invoices', [InvoiceController::class, 'customerInvoices']);
