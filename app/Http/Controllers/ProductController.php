@@ -33,7 +33,8 @@ class ProductController extends Controller
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
-        $product->load('media');
+        $product->load('medias');
+        // dd($product->medias);
 
         return response()->json($product);
     }
@@ -70,8 +71,7 @@ class ProductController extends Controller
     // List all products with category and unitprice eager-loaded
     public function index()
     {
-        $products = Product::with(['category', 'unitprice'])->get();
-
+        $products = Product::with(['category', 'unitprice', 'medias'])->get();
         return response()->json($products);
     }
 
@@ -120,6 +120,10 @@ class ProductController extends Controller
             return response()->json([
                 'message' => 'No products found for the given filter criteria.'
             ], 404); // Return a 404 response if no products are found
+        }
+
+        foreach ($products as $product) {
+            $product->media;
         }
 
         // Return the filtered products as a JSON response
