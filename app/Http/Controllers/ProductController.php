@@ -44,6 +44,17 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
 
+        if ($request->hasFile('medias')) {
+            $product->clearMediaCollection('medias');
+            foreach ($request->file('medias') as $file) {
+                $product
+                    ->addMedia($file)
+                    ->toMediaCollection('medias');
+            }
+        }
+
+        $product->medias;
+
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
