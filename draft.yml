@@ -71,6 +71,7 @@ models:
     description: string
     order_id: id
     driver_id: id
+    status: enum:pending,inprogress,resolved
     priority: enum:high,low,medium
 
   Return:
