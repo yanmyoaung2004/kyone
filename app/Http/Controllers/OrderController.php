@@ -84,9 +84,7 @@ class OrderController extends Controller
 
     public function store(OrderStoreRequest $request)
     {
-        // Start a database transaction
         DB::beginTransaction();
-
         try {
             $items = $request->get('items');
             $shipmentInfo = $request->get('shipmentInfo');

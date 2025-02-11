@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\EscalatedIssueController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OrderAssignTruckController;
@@ -54,8 +55,8 @@ Route::apiResource('/locations', LocationController::class);
 
 
 
-Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueController::class);
+Route::apiResource('escalated-issues', EscalatedIssueController::class);
 
-Route::get('/deliveries',[DeliveryController::class, 'index']);
+Route::get('/deliveries', [DeliveryController::class, 'index']);
 Route::get('/deliveries/data',[DeliveryController::class, 'getData']);
 Route::get('/deliveries/{truckId}', [TruckController::class, 'getTruckOrders']);

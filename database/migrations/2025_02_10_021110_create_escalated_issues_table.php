@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('order_id');
             $table->foreignId('driver_id');
             $table->enum('priority', ["high","low","medium"]);
+            $table->enum('status', ["pending","inprogress","resolved"]);
             $table->timestamps();
         });
 

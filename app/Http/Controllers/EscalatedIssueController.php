@@ -12,11 +12,10 @@ use Illuminate\Http\Response;
 
 class EscalatedIssueController extends Controller
 {
-    public function index(Request $request): EscalatedIssueCollection
+    public function index()
     {
-        $escalatedIssues = EscalatedIssue::all();
-
-        return new EscalatedIssueCollection($escalatedIssues);
+        $escalatedIssues = EscalatedIssue::with('driver.user', 'order.invoice', 'order.customer.user')->orderBy('created_at', 'desc')->get();
+        return response()->json($escalatedIssues);
     }
 
     public function store(EscalatedIssueStoreRequest $request): EscalatedIssueResource
