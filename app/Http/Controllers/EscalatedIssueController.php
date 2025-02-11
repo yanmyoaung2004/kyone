@@ -43,4 +43,10 @@ class EscalatedIssueController extends Controller
 
         return response()->noContent();
     }
+
+    public function updateStatus($id){
+        $escalatedIssue = EscalatedIssue::find($id);
+
+        return response()->json($escalatedIssue);
+    }
 }

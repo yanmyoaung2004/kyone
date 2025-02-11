@@ -20,7 +20,8 @@ class OrderStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => 'required|exists:customers,id',
+            //'customer_id' => 'required|exists:customers,id',
+            'customer_id' => 'required',
             'shipmentInfo.address' => 'required|string|max:255',
             'shipmentInfo.state' => 'required|string|max:100',
             'shipmentInfo.city' => 'required|string|max:100',

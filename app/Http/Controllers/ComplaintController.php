@@ -12,8 +12,14 @@ class ComplaintController extends Controller
     // Get all complaints
     public function index()
     {
-        return response()->json(Complaint::all(), 200);
+        $complaints = Complaint::with('customer.user', 'order.invoice')->get();
+
+        return response()->json(
+            $complaints,
+            200
+        );
     }
+
 
     // Get a single complaint
     public function show($id)
@@ -44,7 +50,7 @@ class ComplaintController extends Controller
     } catch (ValidationException $e) {
         return response()->json([
             'message'=> $e->errors(),
-            
+
         ], 422);
     }
     }
@@ -72,7 +78,7 @@ class ComplaintController extends Controller
         return response()->json(['message' => 'Complaint updated successfully', 'complaint' => $complaint], 200);
     } catch (ValidationException $e) {
         return response()->json([
-            'message'=> $e->errors(),    
+            'message'=> $e->errors(),
         ], 422);
     }
     }
@@ -90,15 +96,15 @@ class ComplaintController extends Controller
     }
 
 
-    
+
     public function filterComplaint(Request $request)
     {
         // Get the filter parameters (status in this case)
         $filters = $request->query('filter', []);
-        
+
         // Check if a valid status filter is provided
         $validStatuses =["open","in_progress","resolved","closed"];
-        
+
         if (isset($filters['status']) && !in_array($filters['status'], $validStatuses)) {
             return response()->json(['message' => 'Invalid status provided'], 400);
         }

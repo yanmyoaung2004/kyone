@@ -71,8 +71,6 @@ Route::get('/truck_assgiend_order/{id}', [OrderAssignTruckController::class, 'as
 Route::get('/orders/on_progress', [OrderController::class, 'onProgressOrders']);
 
 
-Route::apiResource('escalated-issues', EscalatedIssueController::class);
-
 Route::get('/sales/order_count_by_year/{year}', [SaleController::class, 'orderCountByYear']);
 Route::get('/sales/order_count_by_week/{week}', [SaleController::class, 'orderCountByWeek']);
 Route::get('/sales/order_count_by_day/{day}', [SaleController::class, 'orderCountByDay']);
@@ -89,6 +87,7 @@ Route::get('orders/on_progress', [OrderController::class, 'onProgressOrders']);
 
 
 Route::apiResource('escalated-issues', EscalatedIssueController::class);
+Route::put('escalated-issues/{id}/update', [EscalatedIssueController::class, 'updateStatus']);
 
 Route::get('/deliveries', [DeliveryController::class, 'index']);
 Route::get('/deliveries/data',[DeliveryController::class, 'getData']);

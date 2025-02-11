@@ -19,7 +19,7 @@ class OrderSeeder extends Seeder
         $locationIds = Location::pluck('id')->toArray();
 
         // Define possible order statuses
-        $statuses = ["pending", "inprogress", "delayed", "delivered", "cancelled"];
+        $statuses = ["pending", "processing", "completed", "cancelled"];
 
         foreach (range(1, 50) as $index) {
             DB::table('orders')->insert([

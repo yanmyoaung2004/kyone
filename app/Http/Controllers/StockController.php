@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stock;
+use App\Models\Unitprice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -15,7 +16,24 @@ class StockController extends Controller
      */
     public function index()
     {
-        $stocks = Stock::with(['product.category', 'unitprice'])->paginate(10);
+        $stocks = Stock::with(['product.category', 'unitprice'])->get();
+
+        $formattedData = $stocks->map(function ($stock) {
+            $unitprice = Unitprice::where('product_id', $stock->product->id)->latest()->first();
+
+                return [
+                    'id' => $stock->product->id,
+                    'name' => $stock->product->name,
+                    'description' => $stock->product->description,
+                    'price_id' => $unitprice->id,
+                    'price' => (float) $unitprice->price,
+                    'image' => $stock->product->image ?? 'https://via.placeholder.com/150',
+                    'category' => $stock->product->category->name,
+                ];
+            });
+        return response()->json($formattedData);
+
+
         $formattedStocks = collect($stocks->items())->map(function ($stock) {
                 return [
                     'id' => $stock->product->id,
@@ -30,14 +48,6 @@ class StockController extends Controller
 
             return response()->json([
                 'data' => $formattedStocks,
-                'pagination' => [
-                    'current_page' => $stocks->currentPage(),
-                    'last_page' => $stocks->lastPage(),
-                    'per_page' => $stocks->perPage(),
-                    'total' => $stocks->total(),
-                    'next_page_url' => $stocks->nextPageUrl(),
-                    'prev_page_url' => $stocks->previousPageUrl(),
-                ],
             ]);
     }
 
@@ -163,6 +173,6 @@ class StockController extends Controller
         }
     }
 
-    
+
 
 }

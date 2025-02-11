@@ -104,17 +104,19 @@ public function getTruckOrders($truckId)
 {
     // Get orders assigned to this truck
     $assignedOrders = OrderAssignTruck::where('truck_id', $truckId)
-        ->with(['order', 'driver'])
+        ->with(['order.customer.user', 'order.products', 'order.location' ,'driver.user'])
         ->get();
 
+    $truck = Truck::find($truckId);
     if ($assignedOrders->isEmpty()) {
         return response()->json(['message' => 'No orders found for this truck'], 404);
     }
 
     return response()->json([
+        'truck' => $truck,
         'order_count' => $assignedOrders->count(),
-        'orders' => $assignedOrders->pluck('order'), // Get only order details
-        'driver' => $assignedOrders->first()->driver // Assuming one driver per truck
+        'orders' => $assignedOrders->pluck('order'),
+        'driver' => $assignedOrders->first()->driver
     ]);
 }
 
