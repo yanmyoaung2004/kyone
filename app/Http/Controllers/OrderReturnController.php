@@ -14,9 +14,9 @@ class OrderReturnController extends Controller
 {
     public function index(Request $request): ReturnCollection
     {
-        $returns = OrderReturn::all();
-
-        return new ReturnCollection($returns);
+        $orderReturns = OrderReturn::with(['order.complaint'])->get();
+        
+        return new ReturnCollection($orderReturns);
     }
 
     public function store(ReturnStoreRequest $request): ReturnResource
@@ -27,8 +27,9 @@ class OrderReturnController extends Controller
     }
 
     public function show(Request $request, OrderReturn $orderReturn): ReturnResource
-    {
-        return new ReturnResource($orderReturn);
+    {   
+        $orderReturn = new ReturnResource($orderReturn);
+        return $orderReturn;
     }
 
     public function update(ReturnUpdateRequest $request, OrderReturn $orderReturn): ReturnResource
@@ -67,6 +68,7 @@ class OrderReturnController extends Controller
         // Execute query and get results
         $orderReturns = $query->get();
 
-        return response()->json($orderReturns);
+      //  return response()->json($orderReturns);
+       return  new ReturnCollection($orderReturns);
     }
 }

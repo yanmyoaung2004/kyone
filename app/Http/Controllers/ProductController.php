@@ -89,6 +89,7 @@ class ProductController extends Controller
 
     public function filterProducts(Request $request)
     {
+        
         // Get the filters from the query string
         $filters = $request->query();
 

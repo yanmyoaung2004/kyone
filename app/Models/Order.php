@@ -69,4 +69,9 @@ class Order extends Model
     public function orderRetrun(){
         return $this->hasMany(OrderReturn::class);
     }
+
+    public function complaint()
+    {
+        return $this->hasOne(Complaint::class);
+    }
 }

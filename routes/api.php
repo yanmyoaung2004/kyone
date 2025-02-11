@@ -20,6 +20,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UnitpriceController;
 use App\Models\City;
+use App\Models\OrderReturn;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -48,6 +49,8 @@ Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class)->except(['update']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
 Route::apiResource('orderAssignTrucks', OrderAssignTruckController::class);
+Route::apiResource('order-returns', OrderReturnController::class);
+
 
 
 Route::get('/stocks/check_stock/{productId}', [StockController::class, 'checkStock']);
@@ -95,7 +98,7 @@ Route::get('/complaints', [ComplaintController::class, 'filterComplaints']);
 Route::get('/tucks', [TruckController::class, 'filterTrucks']);
 
 //OrderReturn filter
-Route::get('/orderReturns', [OrderReturnController::class, 'filterOrderReturn']);
+Route::get('/order-returns', [OrderReturnController::class, 'filterOrderReturn']);
 
 
 
