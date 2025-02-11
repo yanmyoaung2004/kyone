@@ -142,6 +142,8 @@ class OrderController extends Controller
     
         // Get the filtered orders
         $orders = $query->get();
+
+        $orders->load('orderAssignTruck.truck','orderAssignTruck.driver');
     
         // Check if no orders were found
         if ($orders->isEmpty()) {
@@ -155,25 +157,5 @@ class OrderController extends Controller
         ]);
     }
     
-
-    
-    public function orderLocationFilter(Request $request)
-    {
-        // Retrieve the location filter from query parameters
-        $locationId = $request->query('filter.location');
-    
-        if ($locationId) {
-            // Fetch orders by location_id
-            $orders = Order::where('location_id', $locationId)->get();
-    
-            // Return response
-            return response()->json([
-                'orders' => $orders
-            ], 200);
-        } else {
-            return response()->json(['message' => 'No orders found for the given Location'], 404);
-
-        }
-    }
     
 }
