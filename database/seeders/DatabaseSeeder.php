@@ -31,7 +31,10 @@ class DatabaseSeeder extends Seeder
             InvoiceSeeder::class,
             TruckSeeder::class,
             OrderAssignTruckSeeder::class,
-            ComplaintSeeder::class
+            ComplaintSeeder::class,
+            OrderReturnSeeder::class
+
+
             
         ]);
     }
