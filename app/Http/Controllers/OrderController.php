@@ -10,45 +10,137 @@ use App\Http\Resources\OrderResource;
 use App\Http\Resources\OrderCollection;
 use App\Http\Requests\OrderStoreRequest;
 use App\Http\Requests\OrderUpdateRequest;
+use App\Models\Location;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    public function index(Request $request): OrderCollection
+    public function index()
     {
-        $orders = Order::all();
+        $orders = Order::with(['customer.user', 'location'])
+            ->where('status', 'pending')
+            ->get();
+        $formattedData = $orders->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'customer' => $order->customer->user->name ?? 'Unknown',
+                'address' => $order->location->address ?? 'No address',
+                'eta' => 10,
+                'status' => 'pending',
+            ];
+        });
 
-        return new OrderCollection($orders);
+        return response()->json($formattedData);
     }
 
-    public function store(OrderStoreRequest $request): OrderResource
+
+    public function getOrderByUserId($userId)
     {
-        $order = Order::create($request->validated());
+        $orders = Order::with('products')->where('customer_id', $userId)->get();
 
-        $order->payment()->create([
-            'method' => $request->method,
-            'amount' => $order->total_price,
-            'status' => 'pending',
-        ]);
+        $filteredOrder = $orders->map(function ($order) {
+            return [
+                'invoiceId' => $order->id,
+                'totalAmount' => $order->total_price,
+                'buyDate' => $order->created_at,
+                'status' => $order->status,
+                'product' => $order->products->map(function ($p) {
+                    return [
+                        'productName' => $p->name,
+                        'quantity' => $p->pivot->quantity,
+                        'totalAmount' => 'ksdfj',
+                        ];
+                    })
+                ];
+        });
 
-        $order->invoice()->create([
-            'total_amount' => $order->total_price,
-            'invoice_number' => 'INV-' . Str::uuid(),
-        ]);
+        return response()->json($filteredOrder);
 
-        return new OrderResource($order);
+
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        $orderProducts = $order->products;
+
+
+
+        $data = $orderProducts->map(function ($product) {
+            $pivotData = $product->pivot;
+            return response()->json($pivotData);
+            return [
+                'product_id' => $product->id,
+                'unitprice_id' => $pivotData->unitprice_id,
+                'quantity' => $pivotData->quantity,
+                ];
+            });
+
+
+        return response()->json($data);
     }
+
+
+
+    public function store(OrderStoreRequest $request)
+    {
+        // Start a database transaction
+        DB::beginTransaction();
+
+        try {
+            $items = $request->get('items');
+            $shipmentInfo = $request->get('shipmentInfo');
+            $location = Location::create([
+                'address' => $shipmentInfo['address'],
+                'state' => $shipmentInfo['state'],
+                'city' => $shipmentInfo['city'],
+            ]);
+            $order = Order::create([
+                'customer_id' => $request->get('customer_id'),
+                'location_id' => $location->id,
+                'status' => 'pending',
+                'total_price' => $request->get('total'),
+                'eta' => 10,
+            ]);
+
+            $order->payment()->create([
+                'method' => $request->get('payment'),
+                'amount' => $request->get('total'),
+                'status' => 'pending',
+            ]);
+
+            $order->invoice()->create([
+                'total_amount' => $request->get('total'),
+                'invoice_number' => 'INV-' . Str::uuid(),
+            ]);
+
+            foreach ($items as $item) {
+                $order->products()->attach($item['id'], [
+                    'unitprice_id' => $item['unitprice_id'],
+                    'quantity' => $item['quantity'],
+                ]);
+            }
+            DB::commit();
+
+            return response()->json(['message' => 'Your order has been successfully created!'], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Return error response with the exception message
+            return response()->json([
+                'error' => 'Failed to create the order',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 
     public function show(Request $request, Order $order): OrderResource
     {
         return new OrderResource($order);
     }
 
-    public function update(OrderUpdateRequest $request, Order $order): OrderResource
-    {
-        $order->update($request->validated());
-
-        return new OrderResource($order);
-    }
 
     public function destroy(Request $request, Order $order): Response
     {

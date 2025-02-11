@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Location;
 use Carbon\Carbon;
 use CategorySeeder;
 use Database\Seeders\CategorySeeder as SeedersCategorySeeder;
@@ -17,6 +18,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
+
+        Location::factory()->count(10)->create();
 
 
         DB::table('categories')->insert([

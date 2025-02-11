@@ -13,58 +13,33 @@ class StockController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-{
-    try {
-        $query = Stock::with(['product.category', 'unitprice']);
-
-        // Apply search filter if 'search' parameter is present
-        if ($request->has('search')) {
-            $searchTerm = $request->input('search');
-            $query->whereHas('product', function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('description', 'LIKE', "%{$searchTerm}%");
-            });
-        }
-
-        // Apply category filter if 'category' parameter is present
-        if ($request->has('category')) {
-            $category = $request->input('category');
-            $query->whereHas('product.category', function ($q) use ($category) {
-                $q->where('name', $category);
-            });
-        }
-
-        // Paginate the results
-        $stocks = $query->paginate(10);
-
-        // Transform the response
+    public function index()
+    {
+        $stocks = Stock::with(['product.category', 'unitprice'])->paginate(10);
         $formattedStocks = collect($stocks->items())->map(function ($stock) {
-            return [
-                'id' => $stock->product->id,
-                'name' => $stock->product->name,
-                'description' => $stock->product->description,
-                'price' => (float) $stock->unitprice->price,
-                'image' => $stock->product->image ?? 'https://via.placeholder.com/150',
-                'category' => $stock->product->category->name,
-            ];
-        });
+                return [
+                    'id' => $stock->product->id,
+                    'name' => $stock->product->name,
+                    'description' => $stock->product->description,
+                    'price_id' => (float) $stock->unitprice->id,
+                    'price' => (float) $stock->unitprice->price,
+                    'image' => $stock->product->image ?? 'https://via.placeholder.com/150',
+                    'category' => $stock->product->category->name,
+                ];
+            });
 
-        return response()->json([
-            'data' => $formattedStocks,
-            'pagination' => [
-                'current_page' => $stocks->currentPage(),
-                'last_page' => $stocks->lastPage(),
-                'per_page' => $stocks->perPage(),
-                'total' => $stocks->total(),
-                'next_page_url' => $stocks->nextPageUrl(),
-                'prev_page_url' => $stocks->previousPageUrl(),
-            ],
-        ]);
-    } catch (Exception $e) {
-        return response()->json(['error' => 'Failed to fetch stocks', 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'data' => $formattedStocks,
+                'pagination' => [
+                    'current_page' => $stocks->currentPage(),
+                    'last_page' => $stocks->lastPage(),
+                    'per_page' => $stocks->perPage(),
+                    'total' => $stocks->total(),
+                    'next_page_url' => $stocks->nextPageUrl(),
+                    'prev_page_url' => $stocks->previousPageUrl(),
+                ],
+            ]);
     }
-}
 
 
     /**

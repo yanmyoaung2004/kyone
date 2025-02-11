@@ -4,8 +4,10 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OrderAssignTruckController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -37,11 +39,14 @@ Route::apiResource('products', ProductController::class);
 Route::apiResource('orderAssignTrucks',OrderAssignTruckController::class);
 
 
-Route::apiResource('orders', App\Http\Controllers\OrderController::class);
+Route::apiResource('/orders', App\Http\Controllers\OrderController::class);
+Route::get('/orders/user/{userId}',[OrderController::class, 'getOrderByUserId']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/logout', [AuthController::class, 'logout']);
+Route::apiResource('/locations', LocationController::class);
+
 
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::post('/logout', [AuthController::class, 'logout']);
@@ -50,3 +55,7 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 
 Route::apiResource('escalated-issues', App\Http\Controllers\EscalatedIssueController::class);
+
+Route::get('/deliveries',[DeliveryController::class, 'index']);
+Route::get('/deliveries/data',[DeliveryController::class, 'getData']);
+Route::get('/deliveries/{truckId}', [TruckController::class, 'getTruckOrders']);

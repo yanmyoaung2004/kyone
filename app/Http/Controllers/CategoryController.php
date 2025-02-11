@@ -10,8 +10,17 @@ class CategoryController extends Controller
     // Get all categories
     public function index()
     {
-        return response()->json(Category::all());
+        $categories = Category::all()->map(function ($category) {
+            return [
+                'value' => $category->id,
+                'label' => $category->name,
+            ];
+        });
+        $categories->prepend(['value' => 'all', 'label' => 'All Categories']);
+
+        return response()->json($categories);
     }
+
 
     // Store a new category
     public function store(Request $request)
@@ -23,18 +32,18 @@ class CategoryController extends Controller
                 'name.required' => 'The category name is required.',
                 'name.unique' => 'This category name already exists.',
             ]);
-    
+
             $category = Category::create(['name' => $validatedData['name']]);
-    
+
             return response()->json([
                 'message' => 'Category created successfully!',
                 'category' => $category
             ], 201);
-            
+
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => $e->errors(),
-                
+
             ], 422);
         }
     }
@@ -68,11 +77,11 @@ class CategoryController extends Controller
         $category->update(['name' => $request->name]);
 
         return response()->json($category);
-        
+
     }catch (ValidationException $e) {
         return response()->json([
             'message' =>  $e->errors(),
-           
+
         ], 422);
     }
     }

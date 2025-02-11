@@ -20,11 +20,16 @@ class OrderStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => ['required', 'integer', 'exists:customers,id'],
-            'location_id' => ['required', 'integer', 'exists:locations,id'],
-            'status' => ['required', 'in:pending,inprogress,delivered,cancelled,delayed'],
-            'total_price' => ['required', 'string'],
-            'method' => ['required', 'in:credit_card,paypal,cash,bank_transfer'],
+            'customer_id' => 'required|exists:customers,id',
+            'shipmentInfo.address' => 'required|string|max:255',
+            'shipmentInfo.state' => 'required|string|max:100',
+            'shipmentInfo.city' => 'required|string|max:100',
+            'total' => 'required|numeric|min:0',
+            'payment' => 'required|string|in:credit_card,paypal,cash,bank_transfer',
+            'items' => 'required|array|min:1',
+            'items.*.id' => 'required|exists:products,id',
+            'items.*.unitprice_id' => 'required|exists:unitprices,id',
+            'items.*.quantity' => 'required|integer|min:1',
         ];
     }
 }

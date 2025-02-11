@@ -10,19 +10,17 @@ class OrderAssignTruckController extends Controller
     public function store(Request $request)
     {
         try{
-
-        $validated = $request->validate([
-            'order_id' => 'required|exists:orders,id',
-            'driver_id' => 'required|exists:drivers,id',
-            'truck_id' => 'required|exists:trucks,id',
-        ]);
-
-        $orderAssign = OrderAssignTruck::create($validated);
-        return response()->json(['message' => 'Order assigned successfully', 'order_assign_truck' => $orderAssign], 201);
+            $validated = $request->validate([
+                'order_id' => 'required|exists:orders,id',
+                'driver_id' => 'required|exists:drivers,id',
+                'truck_id' => 'required|exists:trucks,id',
+            ]);
+            $orderAssign = OrderAssignTruck::create($validated);
+            return response()->json(['message' => 'Order assigned successfully', 'order_assign_truck' => $orderAssign], 201);
     } catch (ValidationException $e) {
         return response()->json([
             'message'=> $e->errors(),
-            
+
         ], 422);
     }
     }
@@ -52,7 +50,7 @@ class OrderAssignTruckController extends Controller
     } catch (ValidationException $e) {
         return response()->json([
             'message'=> $e->errors(),
-            
+
         ], 422);
     }
     }
