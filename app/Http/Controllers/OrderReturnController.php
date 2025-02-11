@@ -43,4 +43,30 @@ class OrderReturnController extends Controller
         $orderReturn->delete();
         return response()->noContent();
     }
+    public function filterOrderReturn(Request $request)
+    {
+        // Get filter parameters from the request
+        $query = OrderReturn::query();
+
+        // Filter by status (single or multiple values)
+        if ($request->has('status')) {
+            $statuses = explode(',', $request->status);
+            $query->whereIn('status', $statuses);
+        }
+
+        // Filter by order_id
+        if ($request->has('order_id')) {
+            $query->where('order_id', $request->order_id);
+        }
+
+        // Filter by product_id
+        if ($request->has('product_id')) {
+            $query->where('product_id', $request->product_id);
+        }
+
+        // Execute query and get results
+        $orderReturns = $query->get();
+
+        return response()->json($orderReturns);
+    }
 }

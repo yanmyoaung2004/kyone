@@ -8,6 +8,7 @@ use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderAssignTruckController;
+use App\Http\Controllers\OrderReturnController;
 use App\Http\Controllers\TruckController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -91,5 +92,10 @@ Route::get('/products', [ProductController::class, 'filterProducts']); //Complai
 Route::get('/complaints', [ComplaintController::class, 'filterComplaints']);
 
 //Truck filter
-Route::get('/tucks', [TruckController::class, 'filter']);
+Route::get('/tucks', [TruckController::class, 'filterTrucks']);
+
+//OrderReturn filter
+Route::get('/orderReturns', [OrderReturnController::class, 'filterOrderReturn']);
+
+
 
