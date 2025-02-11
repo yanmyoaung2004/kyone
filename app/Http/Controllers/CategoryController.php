@@ -9,8 +9,17 @@ class CategoryController extends Controller
 {
     // Get all categories
     public function index()
-    {
-        return response()->json(Category::all());
+    {   
+        $categories = Category::all()->map(function ($category) {
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'created_at'=>$category->created_at
+            ];
+        });
+
+        return response()->json($categories);
+
     }
 
     // Store a new category
@@ -28,7 +37,8 @@ class CategoryController extends Controller
     
             return response()->json([
                 'message' => 'Category created successfully!',
-                'category' => $category
+                'id' => $category->id,
+                'name'=>$category->name
             ], 201);
             
         } catch (ValidationException $e) {
@@ -48,7 +58,7 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        return response()->json($category);
+        return response()->json($category->only(['id','name']));
     }
 
     // Update a category
@@ -67,7 +77,7 @@ class CategoryController extends Controller
 
         $category->update(['name' => $request->name]);
 
-        return response()->json($category);
+        return response()->json($category->only(['id','name']));
         
     }catch (ValidationException $e) {
         return response()->json([

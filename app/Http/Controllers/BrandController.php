@@ -15,7 +15,12 @@ class BrandController extends Controller
             'name' => 'required|string|max:255'
         ]);
         $brand = Brand::create(['name' => $validatedData['name']]);
-        return response()->json(['message' => 'Brand created successfully!', 'brand' => $brand], 201);
+        return response()->json(['message' => 'Brand created successfully!',
+         'id' => $brand->id,
+         'name'=>$brand->name,
+         'created_at'=>$brand->created_at
+        ], 
+         201);
 
     } catch (ValidationException $e) {
         return response()->json([
@@ -40,7 +45,11 @@ class BrandController extends Controller
         if (!$brand) {
             return response()->json(['message' => 'Brand not found'], 404);
         }
-        return response()->json($brand);
+        return response()->json([
+            "id"=>$brand->id,
+            "name"=>$brand->name,
+            "created_at"=>$brand->created_at
+        ]);
     }
 
     // Update a Brand
@@ -53,7 +62,11 @@ class BrandController extends Controller
 
         $brand = Brand::findOrFail($id);
         $brand->update($request->all());
-        return response()->json(['message' => 'Brand updated successfully!', 'brand' => $brand]);
+        return response()->json(['message' => 'Brand updated successfully!', 
+        'id' => $brand->id,
+        'name'=>$brand->name,
+        "created_at"=>$brand->created_at
+    ]);
 
     }catch (ValidationException $e) {
         return response()->json([
