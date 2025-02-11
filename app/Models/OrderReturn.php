@@ -27,6 +27,12 @@ class OrderReturn  extends Model
         return $this->belongsTo(Order::class);
     }
 
+    // Relationship: Belongs to an Complaint
+    public function complaint()
+    {
+        return $this->belongsTo(Complaint::class);
+    }
+
     // Relationship: Belongs to a Product
     public function product()
     {
