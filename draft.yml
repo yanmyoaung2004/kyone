@@ -65,7 +65,11 @@ models:
   Location:
     address: string
     state: string
-    city: string
+    city_id: id foreign
+
+  City:
+    name: string
+    eta: string nullable
 
   EscalatedIssue:
     description: string

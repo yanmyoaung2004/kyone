@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('address');
             $table->string('state');
-            $table->string('city');
+            $table->foreignId('city_id')->constrained();
             $table->timestamps();
         });
 

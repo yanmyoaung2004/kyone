@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Location extends Model
+class City extends Model
 {
     use HasFactory;
 
@@ -16,9 +15,8 @@ class Location extends Model
      * @var array
      */
     protected $fillable = [
-        'address',
-        'state',
-        'city_id',
+        'name',
+        'eta',
     ];
 
     /**
@@ -28,11 +26,5 @@ class Location extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'city_id' => 'integer',
     ];
-
-    public function city(): BelongsTo
-    {
-        return $this->belongsTo(City::class);
-    }
 }
