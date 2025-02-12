@@ -116,10 +116,17 @@ Route::get('/annual-monthly-orders', [ChartController::class, 'getAnnualMonthlyO
 Route::get('/top-selling-locations/{i}', [ChartController::class, 'topSellingLocations']);
 
 //Annual Total Sale
-Route::get('/annual-total-sale', [ChartController::class, 'getAnnualMonthlyTotalSales']);
+Route::get('/annual-total-sales', [ChartController::class, 'getAnnualMonthlyTotalSales']);
 
 //Get Truck Status
 Route::get('/get-truck-status', [ChartController::class, 'getTruckStatus']);
+
+//Get Annual Brand Order
+Route::get('/annual-brand-orders', [ChartController::class, 'getAnnualBrandOrder']);
+
+
+
+
 
 
 

@@ -99,7 +99,7 @@ public function topSellingLocations($i){
 
 }
 
-function getAnnualtMonthlyTotalSales()
+function getAnnualMonthlyTotalSales()
 {
     $years = range(2020, 2025); // Define the years you want to retrieve data for
     $months = range(1, 12); // Define months (1 to 12)
@@ -154,6 +154,34 @@ public function getTruckStatus(){
 return response()->json($truckStatusCounts);
 }
 
+public function getAnnualBrandOrder(){
+    $annualBrandOrderCounts = DB::table('orders')
+    ->join('order_product', 'orders.id', '=', 'order_product.order_id')
+    ->join('products', 'order_product.product_id', '=', 'products.id')
+    ->join('brands', 'products.brand_id', '=', 'brands.id')  // Assuming you have a 'brands' table
+    ->select(
+        DB::raw('strftime("%Y", orders.created_at) as year'),
+        'brands.name as brand',
+        DB::raw('SUM(order_product.quantity) as total_order_count')
+    )
+    ->whereNotIn('orders.status', ['pending', 'cancelled'])  // Exclude certain order statuses
+    ->groupBy(DB::raw('strftime("%Y", orders.created_at)'), 'brands.name')
+    ->orderBy('year', 'asc')  // Ordering by year
+    ->get();
+    
+// Grouping the results by year to make the final structure
+$groupedByYear = $annualBrandOrderCounts->groupBy('year')->map(function($items) {
+    return $items->map(function($item) {
+        return [
+            'brand' => $item->brand,
+            'total-order-count' => $item->total_order_count,
+        ];
+    });
+});
+
+// To return the result as JSON
+return response()->json($groupedByYear);
+
+}
+
  }
-
-
