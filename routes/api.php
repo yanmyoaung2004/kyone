@@ -11,6 +11,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderAssignTruckController;
 use App\Http\Controllers\TruckController;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ use App\Http\Controllers\StockController;
 
 use App\Http\Controllers\UnitpriceController;
 use App\Models\City;
+use App\Models\Notification;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -92,3 +94,6 @@ Route::put('escalated-issues/{id}/update', [EscalatedIssueController::class, 'up
 Route::get('/deliveries', [DeliveryController::class, 'index']);
 Route::get('/deliveries/data',[DeliveryController::class, 'getData']);
 Route::get('/deliveries/{truckId}', [TruckController::class, 'getTruckOrders']);
+
+Route::get('/notificaitons',[NotificationController::class,'index']);
+Route::post('/notifications',[NotificationController::class,'create']);
