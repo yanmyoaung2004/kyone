@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;  // Custom FormRequest for validation
+use App\Models\Unitprice;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
     // Create a new product
-    public function store(ProductRequest $request)
+    /*public function store(ProductRequest $request)
     {
         $product = Product::create($request->validated());
         if ($request->hasFile('medias')) {
@@ -19,8 +22,42 @@ class ProductController extends Controller
             }
         }
 
+        if ($request->hasFile('image')) {
+            $product->addMedia($request->file('image'))->toMediaCollection('products');
+        }
+
         return response()->json($product, 201);
+    }*/
+
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required',
+            'category_id' => 'required',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        $product = Product::create([
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'description' => $request->description,
+        ]);
+
+        Unitprice::create([
+            'product_id' => $product->id,
+            'price' => $request->price,
+        ]);
+
+        if ($request->hasFile('image')) {
+            $product->addMedia($request->file('image'))->toMediaCollection('products');
+        }
+        $returnProductData = Product::with('unitprice', 'category')->find($product->id);
+
+        return response()->json(['product' => $returnProductData->load('media')]);
     }
+
 
     // Show a single product
     public function show($id)
@@ -80,7 +117,17 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with(['category', 'unitprice', 'medias'])->get();
-        return response()->json($products);
+        $formattedData = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'category' => $product->category->name,
+                'description' => $product->description,
+                'price' => $product->unitprice->price,
+                ];
+
+        });
+        return response()->json($formattedData);
     }
 
 
@@ -139,5 +186,29 @@ class ProductController extends Controller
             'product_count' => $products->count(),
             'products' => $products
         ]);
+    }
+
+    public function topSellingProducts($year)
+    {
+        $topProducts = Product::select(
+            'categories.name as category',
+            'products.name as product',
+            DB::raw('SUM(order_product.quantity) * 1 as orders')
+        )
+        ->join('order_product', 'products.id', '=', 'order_product.product_id')
+        ->join('orders', 'order_product.order_id', '=', 'orders.id')
+        ->join('categories', 'products.category_id', '=', 'categories.id')
+        ->whereNotIn('orders.status', ['pending', 'cancelled'])
+        ->groupBy('products.id', 'products.name', 'products.category_id', 'categories.name')
+        ->orderByDesc('orders')
+        ->take(5)
+        ->get();
+
+        $topProducts->transform(function ($product) {
+            $product->orders = (int) $product->orders;
+            return $product;
+        });
+        return response()->json($topProducts);
+
     }
 }

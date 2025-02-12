@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\OrderAssignTruck;
 use Illuminate\Validation\ValidationException;
@@ -11,8 +12,8 @@ class OrderAssignTruckController extends Controller
 {
     try {
         $validated = $request->validate([
-            'orders' => 'required|array', // Ensure order_id is an array
-            'orders.*' => 'exists:orders,id', // Validate each order_id in the array
+            'orders' => 'required|array',
+            'orders.*' => 'exists:orders,id',
             'driver_id' => 'required|exists:drivers,id',
             'truck_id' => 'required|exists:trucks,id',
         ]);
@@ -20,6 +21,8 @@ class OrderAssignTruckController extends Controller
         $assignedOrders = [];
 
         foreach ($validated['orders'] as $orderId) {
+            $order = Order::find($orderId);
+            $order->update(['status'=>'processing']);
             $assignedOrders[] = OrderAssignTruck::create([
                 'order_id' => $orderId,
                 'driver_id' => $validated['driver_id'],

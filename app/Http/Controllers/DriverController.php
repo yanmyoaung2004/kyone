@@ -12,7 +12,7 @@ class DriverController extends Controller
     {
         try{
 
-       
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'driver_license' => 'required|unique:drivers,driver_license',
@@ -31,7 +31,7 @@ class DriverController extends Controller
     } catch (ValidationException $e) {
         return response()->json([
             'message'=> $e->errors(),
-            
+
         ], 422);
     }
     }
@@ -53,10 +53,15 @@ class DriverController extends Controller
         return response()->json($driver);
     }
 
+    public function getFreeDriver(){
+        $driver = Driver::with('user')->where('status', 'free')->get();
+        return response()->json($driver);
+    }
+
     // 4. UPDATE a driver
     public function update(Request $request, $id)
-    { 
-        
+    {
+
         $driver = Driver::find($id);
         if (!$driver) {
             return response()->json(['message' => 'Driver not found'], 404);
@@ -81,7 +86,7 @@ class DriverController extends Controller
     } catch (ValidationException $e) {
         return response()->json([
             'message'=> $e->errors(),
-            
+
         ], 422);
     }
     }

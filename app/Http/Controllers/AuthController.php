@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Role;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -26,12 +27,13 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-
+            $user->assignRole(Role::CUSTOMER);
             Customer::create([
                 'user_id' => $user->id,
                 'phone' => '123456',
                 'address' => 'address',
             ]);
+
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -70,9 +72,8 @@ class AuthController extends Controller
                 'message' => 'Wrong password!',
             ]);
         }
-
         $token = $user->createToken('auth_token')->plainTextToken;
-
+        $user->roles = $user->getRoleNames();
         return response()->json([
             'user' => $user,
             'token' => $token,

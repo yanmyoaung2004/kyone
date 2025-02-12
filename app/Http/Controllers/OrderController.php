@@ -12,6 +12,7 @@ use App\Http\Requests\OrderStoreRequest;
 use App\Http\Requests\OrderUpdateRequest;
 use App\Models\Customer;
 use App\Models\Location;
+use App\Models\Stock;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -58,7 +59,6 @@ class OrderController extends Controller
 
         return response()->json($filteredOrder);
     }
-
 
 
     public function store(OrderStoreRequest $request)
@@ -113,6 +113,38 @@ class OrderController extends Controller
         }
     }
 
+
+    public function acceptOrder($orderId)
+    {
+        DB::beginTransaction();
+        try {
+            $order = Order::with('products')->findOrFail($orderId);
+            $order->update(['status' => 'processing']);
+            foreach ($order->products as $product) {
+                $stock = $product->stock;
+                if ($stock) {
+                    $stock->decrement('quantity', $product->pivot->quantity);
+                }
+            }
+            DB::commit();
+            return response()->json([
+                'message' => 'Order successfully accepted!',
+                'order_id' => $order->id,
+                'status' => $order->status,
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'An error occurred while accepting the order.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getOrderById($orderId){
+        $order = Order::with('products.unitprice', 'customer.user')->find($orderId);
+        return response()->json($order);
+    }
 
     public function show(Request $request, Order $order): OrderResource
     {

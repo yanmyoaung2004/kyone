@@ -65,4 +65,9 @@ class Product extends Model implements HasMedia
     {
         return $this->media()->where('collection_name', 'medias');
     }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->getFirstMediaUrl('products');
+    }
 }

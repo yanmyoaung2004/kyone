@@ -45,7 +45,10 @@ Route::get('/customers/{customerId}/invoices', [InvoiceController::class, 'custo
 Route::apiResource('dirvers', DriverController::class);
 Route::apiResource('trucks', TruckController::class);
 Route::apiResource('complaints', ComplaintController::class);
+
 Route::apiResource('stocks', StockController::class);
+
+
 Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class)->except(['update']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
@@ -55,6 +58,7 @@ Route::apiResource('orderAssignTrucks', OrderAssignTruckController::class);
 Route::apiResource('/orders', App\Http\Controllers\OrderController::class);
 Route::get('/orders/user/{userId}',[OrderController::class, 'getOrderByUserId']);
 Route::get('/stocks/check_stock/{productId}', [StockController::class, 'checkStock']);
+
 
 //Auth
 Route::post('/register', [AuthController::class, 'register']);
@@ -69,6 +73,7 @@ Route::apiResource('/locations', LocationController::class);
 
 Route::get('/truck_assgiend_order/{id}', [OrderAssignTruckController::class, 'assignedOrder']);
 Route::get('/orders/on_progress', [OrderController::class, 'onProgressOrders']);
+
 
 
 Route::get('/sales/order_count_by_year/{year}', [SaleController::class, 'orderCountByYear']);
@@ -92,3 +97,19 @@ Route::put('escalated-issues/{id}/update', [EscalatedIssueController::class, 'up
 Route::get('/deliveries', [DeliveryController::class, 'index']);
 Route::get('/deliveries/data',[DeliveryController::class, 'getData']);
 Route::get('/deliveries/{truckId}', [TruckController::class, 'getTruckOrders']);
+
+Route::get('warehouse/stocks', [StockController::class, 'indexForWarehouse']);
+Route::post('warehouse/stocks/update', [StockController::class, 'updateStock']);
+
+Route::get('sale/products/topSellingProducts/{year}', [ProductController::class, 'topSellingProducts']);
+Route::get('sale/products/getMonthlyOrders', [SaleController::class, 'getMonthlyOrdersMysql']);
+Route::get('sale/products/topSellingLocations/{i}', [SaleController::class, 'topSellingLocations']);
+
+
+//Truck filter
+Route::get('/trucks', action: [TruckController::class, 'filterTrucks']);
+Route::get('/drivers/getfree', action: [DriverController::class, 'getFreeDriver']);
+
+
+Route::get('/orders/accept/{orderId}', [OrderController::class, 'acceptOrder']);
+Route::get('/orders/getorderbyid/{orderId}', [OrderController::class, 'getOrderById']);

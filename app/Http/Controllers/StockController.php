@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\Stock;
 use App\Models\Unitprice;
 use Illuminate\Http\Request;
@@ -17,38 +18,51 @@ class StockController extends Controller
     public function index()
     {
         $stocks = Stock::with(['product.category', 'unitprice'])->get();
-
         $formattedData = $stocks->map(function ($stock) {
             $unitprice = Unitprice::where('product_id', $stock->product->id)->latest()->first();
+            $stock = Stock::where('product_id', $stock->product->id)->first();
+            $orderedQuantity = Order::where('status', 'pending')
+                ->whereHas('products', function ($query) use ($stock) {
+                    $query->where('product_id', $stock->product->id);
+                })
+                ->with('products')
+                ->get()
+                ->flatMap(function ($order) {
+                    return $order->products->pluck('pivot.quantity');
+                })
+                ->sum();
+            $remainingQuantity = $stock->quantity - $orderedQuantity;
 
+            return [
+                'quantity' => $remainingQuantity,
+                'id' => $stock->product->id,
+                'name' => $stock->product->name,
+                'description' => $stock->product->description,
+                'price_id' => $unitprice->id,
+                'price' => (float) $unitprice->price,
+                'image' => $stock->product->getImageUrlAttribute() ?? 'https://via.placeholder.com/150',
+                'category' => $stock->product->category->name,
+            ];
+        });
+
+        return response()->json($formattedData);
+    }
+
+
+
+    public function indexForWarehouse()
+    {
+        $stocks = Stock::with(['product.category', 'unitprice'])->get();
+        $formattedData = $stocks->map(function ($stock) {
                 return [
-                    'id' => $stock->product->id,
+                    'id' => $stock->id,
                     'name' => $stock->product->name,
-                    'description' => $stock->product->description,
-                    'price_id' => $unitprice->id,
-                    'price' => (float) $unitprice->price,
-                    'image' => $stock->product->image ?? 'https://via.placeholder.com/150',
-                    'category' => $stock->product->category->name,
+                    'currentStock' => $stock->quantity,
+                    'reorderLevel' => $stock->safety_stock,
+                    'lastRestockDate' => $stock->updated_at,
                 ];
             });
         return response()->json($formattedData);
-
-
-        $formattedStocks = collect($stocks->items())->map(function ($stock) {
-                return [
-                    'id' => $stock->product->id,
-                    'name' => $stock->product->name,
-                    'description' => $stock->product->description,
-                    'price_id' => (float) $stock->unitprice->id,
-                    'price' => (float) $stock->unitprice->price,
-                    'image' => $stock->product->image ?? 'https://via.placeholder.com/150',
-                    'category' => $stock->product->category->name,
-                ];
-            });
-
-            return response()->json([
-                'data' => $formattedStocks,
-            ]);
     }
 
 
@@ -88,6 +102,20 @@ class StockController extends Controller
             return response()->json(['error' => 'Failed to fetch stock', 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function updateStock(Request $request)
+    {
+        $productId = $request->get('productId');
+        $quantity = $request->get('quantity');
+        $stock = Stock::findOrFail($productId);
+        if (!$stock) {
+            return response()->json(['message' => 'Stock not found'], 404);
+        }
+        $stock->quantity += $quantity;
+        $stock->save();
+        return response()->json(['message' => 'Stock updated successfully', 'stock' => $stock]);
+    }
+
 
     /**
      * Update the specified resource in storage.
