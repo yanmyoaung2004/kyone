@@ -13,6 +13,7 @@ use App\Http\Controllers\TruckController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\EscalatedIssueController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -99,6 +100,34 @@ Route::get('/tucks', [TruckController::class, 'filterTrucks']);
 
 //OrderReturn filter
 Route::get('/order-returns', [OrderReturnController::class, 'filterOrderReturn']);
+
+
+
+//Chart Data Analysis
+
+
+//Top Selling Products
+Route::get('/top-selling-products/{i}', [ChartController::class, 'topSellingProducts']);
+
+//Proder By Month
+Route::get('/annual-monthly-orders', [ChartController::class, 'getAnnualMonthlyOrders']);
+
+//Top selling
+Route::get('/top-selling-locations/{i}', [ChartController::class, 'topSellingLocations']);
+
+//Annual Total Sale
+Route::get('/annual-total-sale', [ChartController::class, 'getAnnualMonthlyTotalSales']);
+
+//Get Truck Status
+Route::get('/get-truck-status', [ChartController::class, 'getTruckStatus']);
+
+
+
+
+
+
+
+
 
 
 
