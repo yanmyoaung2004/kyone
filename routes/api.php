@@ -21,7 +21,8 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\StockController;
 
 use App\Http\Controllers\UnitpriceController;
-use App\Models\City;
+use App\Http\Controllers\NotificationController;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -113,3 +114,7 @@ Route::get('/drivers/getfree', action: [DriverController::class, 'getFreeDriver'
 
 Route::get('/orders/accept/{orderId}', [OrderController::class, 'acceptOrder']);
 Route::get('/orders/getorderbyid/{orderId}', [OrderController::class, 'getOrderById']);
+
+
+Route::get('/notificaitons',[NotificationController::class,'index']);
+Route::post('/notifications',[NotificationController::class,'create']);
