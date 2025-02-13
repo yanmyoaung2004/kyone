@@ -34,13 +34,13 @@ class StockController extends Controller
             $remainingQuantity = $stock->quantity - $orderedQuantity;
 
             return [
-                'quantity' => $remainingQuantity,
+                'available' => $remainingQuantity,
                 'id' => $stock->product->id,
                 'name' => $stock->product->name,
                 'description' => $stock->product->description,
                 'price_id' => $unitprice->id,
                 'price' => (float) $unitprice->price,
-                'image' => $stock->product->getImageUrlAttribute() ?? 'https://via.placeholder.com/150',
+                'image' => $stock->product->getImageUrlAttribute() ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQinI_44p5jN05YioLyPBhn_1j5tsl7q85rfA&s',
                 'category' => $stock->product->category->name,
             ];
         });

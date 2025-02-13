@@ -110,6 +110,8 @@ Route::get('sale/products/topSellingLocations/{i}', [SaleController::class, 'top
 //Truck filter
 Route::get('/trucks', action: [TruckController::class, 'filterTrucks']);
 Route::get('/drivers/getfree', action: [DriverController::class, 'getFreeDriver']);
+Route::apiResource('/drivers', DriverController::class);
+
 
 
 Route::get('/orders/accept/{orderId}', [OrderController::class, 'acceptOrder']);

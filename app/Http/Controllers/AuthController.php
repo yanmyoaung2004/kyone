@@ -36,7 +36,7 @@ class AuthController extends Controller
 
 
             $token = $user->createToken('auth_token')->plainTextToken;
-
+            $user->roles = $user->getRoleNames();
             return response()->json([
                 'user' => $user,
                 'token' => $token,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;  // Custom FormRequest for validation
+use App\Models\Stock;
 use App\Models\Unitprice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,9 +51,17 @@ class ProductController extends Controller
             'price' => $request->price,
         ]);
 
+
         if ($request->hasFile('image')) {
             $product->addMedia($request->file('image'))->toMediaCollection('products');
         }
+
+        Stock::create([
+            'product_id' => $product->id,
+            'quantity' => 0,
+            'safety_stock' => 0
+        ]);
+
         $returnProductData = Product::with('unitprice', 'category')->find($product->id);
 
         return response()->json(['product' => $returnProductData->load('media')]);
