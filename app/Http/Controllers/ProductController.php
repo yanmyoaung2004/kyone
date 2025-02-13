@@ -11,25 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    // Create a new product
-    /*public function store(ProductRequest $request)
-    {
-        $product = Product::create($request->validated());
-        if ($request->hasFile('medias')) {
-            foreach (request('medias') as $file) {
-                $product
-                    ->addMedia($file)
-                    ->toMediaCollection('medias');
-            }
-        }
-
-        if ($request->hasFile('image')) {
-            $product->addMedia($request->file('image'))->toMediaCollection('products');
-        }
-
-        return response()->json($product, 201);
-    }*/
-
 
     public function store(Request $request)
     {
@@ -82,29 +63,26 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    // Update an existing product
+
     public function update(ProductRequest $request, $id)
     {
         $product = Product::find($id);
-
-        if ($request->hasFile('medias')) {
-            $product->clearMediaCollection('medias');
-            foreach ($request->file('medias') as $file) {
-                $product
-                    ->addMedia($file)
-                    ->toMediaCollection('medias');
-            }
-        }
-
-        $product->medias;
-
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        // Use only the validated data for update
-        $product->update($request->validated());
 
+
+        if ($request->hasFile('image')) {
+            $product->clearMediaCollection('medias');
+            foreach ($request->file('image') as $file) {
+                $product
+                    ->addMedia($file)
+                    ->toMediaCollection('products');
+            }
+        }
+        $product->medias;
+        $product->update($request->validated());
         return response()->json($product);
     }
 
@@ -133,6 +111,7 @@ class ProductController extends Controller
                 'category' => $product->category->name,
                 'description' => $product->description,
                 'price' => $product->unitprice->price,
+                'image' => $product->getImageUrlAttribute()
                 ];
 
         });

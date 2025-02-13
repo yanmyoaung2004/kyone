@@ -59,20 +59,18 @@ class TruckController extends Controller
 
         try{
 
-
         $request->validate([
             'license_plate' => 'required|unique:trucks,license_plate,' . $id . '|string|max:255',
         ]);
 
         $truck->update([
             'license_plate' => $request->license_plate ?? $truck->license_plate,
+            'status' => $request->status,
         ]);
-
         return response()->json(['message' => 'Truck updated successfully', 'truck' => $truck]);
     }catch (ValidationException $e) {
         return response()->json([
             'message' =>  $e->errors(),
-
         ], 422);
     }
     }

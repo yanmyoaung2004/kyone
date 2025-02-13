@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Complaint;
+use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -34,17 +35,17 @@ class ComplaintController extends Controller
     // Create a new complaint
     public function store(Request $request)
     {
-
         try{
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'customer_id' => 'required|exists:users,id',
             'order_id' => 'nullable|exists:orders,id',
-            'subject' => 'required|string|max:255',
             'description' => 'required|string',
             'status' => 'required|in:open,in_progress,resolved,closed',
             'type' => 'required|in:delayed,faulty,wrong,missing'
         ]);
 
+        $customer = Customer::where('user_id', $validated['customer_id'])->first();
+        $validated['customer_id'] = $customer->id;
         $complaint = Complaint::create($validated);
         return response()->json(['message' => 'Complaint created successfully', 'complaint' => $complaint], 201);
     } catch (ValidationException $e) {

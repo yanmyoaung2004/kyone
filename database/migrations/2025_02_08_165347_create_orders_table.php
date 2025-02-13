@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('status', ["pending", "processing", "completed", "cancelled"]);
             $table->string('total_price');
             $table->boolean('isReturn')->default(false);
-            $table->integer('return_id');
+            $table->integer('return_id')->default(0);
             $table->string('eta')->nullable();
             $table->timestamps();
         });

@@ -118,5 +118,5 @@ Route::get('/orders/accept/{orderId}', [OrderController::class, 'acceptOrder']);
 Route::get('/orders/getorderbyid/{orderId}', [OrderController::class, 'getOrderById']);
 
 
-Route::get('/notificaitons',[NotificationController::class,'index']);
+Route::get('/notifications',[NotificationController::class,'index']);
 Route::post('/notifications',[NotificationController::class,'create']);

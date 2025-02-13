@@ -34,7 +34,6 @@ class ComplaintSeeder extends Seeder
             Complaint::create([
                 'customer_id' => $customerId,
                 'order_id' => $orderId,
-                'subject' => ucfirst($faker->words(3, true)), // Random subject
                 'description' => $faker->sentence(10), // Random description
                 'status' => $status,
                 'type' => $type,

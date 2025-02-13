@@ -14,6 +14,7 @@ use App\Mail\OrderStatusUpdated;
 use App\Models\Customer;
 use App\Models\Location;
 use App\Models\Stock;
+use App\Models\Unitprice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -41,19 +42,20 @@ class OrderController extends Controller
     public function getOrderByUserId($userId)
     {
         $customer = Customer::where('user_id', $userId)->first();
-        $orders = Order::with('products')->where('customer_id', $customer->id)->get();
-
+        $orders = Order::with('products', 'location')->where('customer_id', $customer->id)->get();
         $filteredOrder = $orders->map(function ($order) {
             return [
+                'location' => $order->location,
                 'invoiceId' => $order->id,
                 'totalAmount' => $order->total_price,
                 'buyDate' => $order->created_at,
                 'status' => $order->status,
                 'product' => $order->products->map(function ($p) {
+                    $unitprice = Unitprice::find($p->pivot->unitprice_id);
                     return [
                         'productName' => $p->name,
                         'quantity' => $p->pivot->quantity,
-                        'totalAmount' => 'ksdfj',
+                        'totalAmount' => $unitprice->price,
                     ];
                 })
             ];
