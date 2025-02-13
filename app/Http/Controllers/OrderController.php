@@ -10,10 +10,12 @@ use App\Http\Resources\OrderResource;
 use App\Http\Resources\OrderCollection;
 use App\Http\Requests\OrderStoreRequest;
 use App\Http\Requests\OrderUpdateRequest;
+use App\Mail\OrderStatusUpdated;
 use App\Models\Customer;
 use App\Models\Location;
 use App\Models\Stock;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -52,9 +54,9 @@ class OrderController extends Controller
                         'productName' => $p->name,
                         'quantity' => $p->pivot->quantity,
                         'totalAmount' => 'ksdfj',
-                        ];
-                    })
-                ];
+                    ];
+                })
+            ];
         });
 
         return response()->json($filteredOrder);
@@ -101,7 +103,6 @@ class OrderController extends Controller
             DB::commit();
 
             return response()->json(['message' => 'Your order has been successfully created!'], 201);
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -127,6 +128,7 @@ class OrderController extends Controller
                 }
             }
             DB::commit();
+            Mail::to($order->customer->user->email)->send(new OrderStatusUpdated($order, 'processing'));
             return response()->json([
                 'message' => 'Order successfully accepted!',
                 'order_id' => $order->id,
@@ -141,7 +143,8 @@ class OrderController extends Controller
         }
     }
 
-    public function getOrderById($orderId){
+    public function getOrderById($orderId)
+    {
         $order = Order::with('products.unitprice', 'customer.user')->find($orderId);
         return response()->json($order);
     }
