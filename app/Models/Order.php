@@ -23,6 +23,8 @@ class Order extends Model
         'status',
         'total_price',
         'eta',
+        'isReturn',
+        'return _id'
     ];
 
     /**

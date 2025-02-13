@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('location_id')->constrained();
             $table->enum('status', ["pending", "processing", "completed", "cancelled"]);
             $table->string('total_price');
+            $table->boolean('isReturn')->default(false);
+            $table->integer('return_id');
             $table->string('eta')->nullable();
             $table->timestamps();
         });
