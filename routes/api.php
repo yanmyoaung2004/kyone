@@ -24,6 +24,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\UnitpriceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderReturnController;
+use App\Http\Controllers\ServiceCenterController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -137,3 +138,5 @@ Route::post('/orders/create/return',[OrderController::class,'createReturn']);
 Route::get('/warehouse/orders/data', [OrderController::class,'getWarehouseData']);
 
 Route::get('warehouse/getproducts/{orderId}', [OrderController::class,'getWarehouseProductData']);
+Route::resource('service-centers', ServiceCenterController::class);
+

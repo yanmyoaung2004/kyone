@@ -62,6 +62,7 @@ class OrderController extends Controller
     {
         $orders = Order::with(['customer.user', 'location'])
             ->where('status', 'processing')
+            ->whereDoesntHave('orderAssignTruck')
             ->get();
 
         $formattedData = $orders->map(function ($order) {

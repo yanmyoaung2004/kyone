@@ -53,13 +53,11 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::with(['category', 'unitprice', 'orders'])->find($id);
+        $product->getImageUrlAttribute();
 
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
-        $product->load('medias');
-        // dd($product->medias);
-
         return response()->json($product);
     }
 

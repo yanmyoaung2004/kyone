@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Constants\Role;
 use App\Models\Driver;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ class DriverController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        $user->assignRole(Role::DRIVER);
 
         $driver = Driver::create([
             'user_id' => $user->id,
@@ -36,6 +38,7 @@ class DriverController extends Controller
             'nrc_number' => $request->nrc_number,
             'phone' => $request->phone,
         ]);
+
 
         return response()->json(['message' => 'Driver created successfully', 'driver' => $driver]);
     } catch (ValidationException $e) {

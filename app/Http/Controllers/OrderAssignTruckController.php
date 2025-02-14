@@ -2,10 +2,12 @@
 namespace App\Http\Controllers;
 
 use App\Events\UserEvent;
+use App\Models\Driver;
 use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\OrderAssignTruck;
+use App\Models\Truck;
 use Illuminate\Validation\ValidationException;
 
 class OrderAssignTruckController extends Controller
@@ -30,7 +32,12 @@ class OrderAssignTruckController extends Controller
                 'driver_id' => $validated['driver_id'],
                 'truck_id' => $validated['truck_id'],
                 ]);
-                $notification = Notification::create([
+
+            $driver = Driver::find($validated['driver_id']);
+            $driver->update([
+                    'status' => 'busy'
+            ]);
+            $notification = Notification::create([
                         'resource_id' => $order->customer->id,
                         'type' => 'order',
                         'role' => 'customer',
