@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\OrderAssignTruck;
 use App\Models\Truck;
 use Exception;
@@ -117,6 +118,7 @@ public function getTruckOrders($truckId)
         'driver' => $assignedOrders->first()->driver
     ]);
 }
+
 
 
 

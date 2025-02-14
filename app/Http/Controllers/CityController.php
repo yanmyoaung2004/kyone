@@ -13,16 +13,15 @@ class CityController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'name' => 'required|string|max:255'
+                'name' => 'required|string|max:255',
+                'eta' => 'required|string|max:255'
             ]);
 
-            $city = City::create(['name' => $validatedData['name']]);
+            $city = City::create(['name' => $validatedData['name'], 'eta' => $validatedData['eta']]);
 
             return response()->json([
                 'message' => 'City created successfully!',
-                'id' => $city->id,
-                'name' => $city->name,
-                'created_at' => $city->created_at
+                'city' => $city
             ], 201);
 
         } catch (ValidationException $e) {
@@ -57,6 +56,7 @@ class CityController extends Controller
         try {
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
+                'eta' => 'required|string|max:255',
             ]);
 
             $city = City::findOrFail($id);
@@ -64,10 +64,8 @@ class CityController extends Controller
 
             return response()->json([
                 'message' => 'City updated successfully!',
-                'id' => $city->id,
-                'name' => $city->name,
-                'created_at' => $city->created_at
-            ]);
+                'city' => $city
+            ], 201);
 
         } catch (ValidationException $e) {
             return response()->json([

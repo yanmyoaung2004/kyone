@@ -23,7 +23,6 @@ class OrderStoreRequest extends FormRequest
             //'customer_id' => 'required|exists:customers,id',
             'customer_id' => 'required',
             'shipmentInfo.address' => 'required|string|max:255',
-            'shipmentInfo.state' => 'required|string|max:100',
             'shipmentInfo.city' => 'required|string|max:100',
             'total' => 'required|numeric|min:0',
             'payment' => 'required|string|in:credit_card,paypal,cash,bank_transfer',

@@ -11,7 +11,7 @@ class NotificationController extends Controller
 {
     public function index(){
         try{
-            $notification = Notification::all();
+            $notification = Notification::orderBy('created_at', 'desc')->get();
             return response()->json($notification);
            }catch(Exception $e){
             return response()->json(['message'=>"Failed to get notification",'error'=>$e->getMessage()]);

@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Driver;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class DriverController extends Controller
@@ -14,14 +16,22 @@ class DriverController extends Controller
 
 
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required',
             'driver_license' => 'required|unique:drivers,driver_license',
             'nrc_number' => 'required|unique:drivers,nrc_number',
             'phone' => 'required|string',
         ]);
 
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
         $driver = Driver::create([
-            'user_id' => $request->user_id,
+            'user_id' => $user->id,
             'driver_license' => $request->driver_license,
             'nrc_number' => $request->nrc_number,
             'phone' => $request->phone,
@@ -46,7 +56,8 @@ class DriverController extends Controller
     // 3. READ a single driver
     public function show($id)
     {
-        $driver = Driver::find($id);
+
+        $driver = Driver::with('OrderAssingTruck')->where('user_id', $id)->first();
         if (!$driver) {
             return response()->json(['message' => 'Driver not found'], 404);
         }

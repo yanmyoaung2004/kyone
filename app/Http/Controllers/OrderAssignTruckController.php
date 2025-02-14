@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Events\UserEvent;
+use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\OrderAssignTruck;
@@ -27,7 +29,14 @@ class OrderAssignTruckController extends Controller
                 'order_id' => $orderId,
                 'driver_id' => $validated['driver_id'],
                 'truck_id' => $validated['truck_id'],
-            ]);
+                ]);
+                $notification = Notification::create([
+                        'resource_id' => $order->customer->id,
+                        'type' => 'order',
+                        'role' => 'customer',
+                        'message' => 'Your Order '. substr($order->invoice->invoice_number, 0, 9). ' has been dispatched!',
+                    ]);
+                broadcast(new UserEvent($notification))->toOthers();
         }
 
         return response()->json([

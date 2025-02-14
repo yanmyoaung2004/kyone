@@ -11,6 +11,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderAssignTruckController;
 use App\Http\Controllers\TruckController;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ use App\Http\Controllers\StockController;
 
 use App\Http\Controllers\UnitpriceController;
 use App\Http\Controllers\NotificationController;
-
+use App\Http\Controllers\OrderReturnController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -40,6 +41,8 @@ Route::delete('/customers/{id}', [CustomerController::class, 'delete']);
 
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('cities', CityController::class);
+Route::post('/cities/update/{id}', [CityController::class, 'update']);
+
 Route::apiResource('brands', BrandController::class);
 Route::apiResource('invoices', InvoiceController::class);
 Route::get('/customers/{customerId}/invoices', [InvoiceController::class, 'customerInvoices']);
@@ -89,6 +92,7 @@ Route::get('/orders/{id}/truck-driver', [OrderController::class, 'getTruckAndDri
 
 //getTruckOrder
 Route::get('/truck/{id}/orders', [TruckController::class, 'getTruckOrders']);
+Route::post('orders/{id}/status', [OrderController::class, 'changeStatus']);
 Route::get('orders/on_progress', [OrderController::class, 'onProgressOrders']);
 
 
@@ -120,3 +124,14 @@ Route::get('/orders/getorderbyid/{orderId}', [OrderController::class, 'getOrderB
 
 Route::get('/notifications',[NotificationController::class,'index']);
 Route::post('/notifications',[NotificationController::class,'create']);
+
+Route::apiResource('/returns', OrderReturnController::class);
+
+
+Route::post('/messages',[MessageController::class,'create']);
+Route::get('/messages/sale/{receiver_id}',[MessageController::class,'saleMessage']);
+Route::get('/messages/{customer_id}',[MessageController::class,'customerMessage']);
+
+Route::post('/orders/create/return',[OrderController::class,'createReturn']);
+
+Route::get('/warehouse/orders/data', [OrderController::class,'getWarehouseData']);

@@ -2,24 +2,80 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserEvent;
 use App\Models\Order;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Resources\OrderResource;
-use App\Http\Resources\OrderCollection;
 use App\Http\Requests\OrderStoreRequest;
-use App\Http\Requests\OrderUpdateRequest;
 use App\Mail\OrderStatusUpdated;
 use App\Models\Customer;
 use App\Models\Location;
-use App\Models\Stock;
+use App\Models\Notification;
 use App\Models\Unitprice;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
+
+
+    public function changeStatus(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        $newStatus = $request->input('status');
+
+        // Validate the status
+        $allowedStatuses = ['pending', 'processing', 'completed', 'cancelled'];
+        if (!in_array($newStatus, $allowedStatuses)) {
+            return response()->json(['message' => 'Invalid status'], 400);
+        }
+
+        $order->status = $newStatus;
+        $order->save();
+
+        if($newStatus == 'completed'){
+            $notification = Notification::create([
+                    'resource_id' => $order->customer->id,
+                    'type' => 'order',
+                    'role' => 'customer',
+                    'message' => 'Your Order '. substr($order->invoice->invoice_number, 0, 9). ' has been delivered!',
+            ]);
+            broadcast(new UserEvent($notification))->toOthers();
+
+            $notificationSale = Notification::create([
+                    'resource_id' => $order->customer->id,
+                    'type' => 'order',
+                    'role' => 'sale',
+                    'message' => substr($order->invoice->invoice_number, 0, 9). ' has been delivered!',
+            ]);
+            broadcast(new UserEvent($notificationSale))->toOthers();
+        }
+
+        return response()->json(['message' => 'Order status updated successfully', 'status' => $newStatus]);
+    }
+
+
+    public function getWarehouseData()
+    {
+        $orders = Order::with(['customer.user', 'location'])
+            ->where('status', 'processing')
+            ->get();
+        $formattedData = $orders->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'customer' => $order->customer->user->name ?? 'Unknown',
+                'address' => $order->location->address ?? 'No address',
+                'eta' => 10,
+                'status' => 'pending',
+            ];
+        });
+
+        return response()->json($formattedData);
+    }
+
     public function index()
     {
         $orders = Order::with(['customer.user', 'location'])
@@ -64,6 +120,52 @@ class OrderController extends Controller
         return response()->json($filteredOrder);
     }
 
+    public function createReturn(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $originalOrder = Order::findOrFail($request->get('order_id'));
+            $items = $request->get('products');
+            $returnOrder = Order::create([
+                'customer_id' => $originalOrder->customer_id,
+                'location_id' => $originalOrder->location_id,
+                'status' => 'pending',
+                'total_price' => 0,
+                'eta' => 10,
+            ]);
+            $totalAmount = 0;
+            foreach ($items as $item) {
+                $pivotData = $originalOrder->products()->where('product_id', $item['id'])->first();
+                if (!$pivotData || !$pivotData->pivot) {
+                    throw new \Exception("Product not found in the original order.");
+                }
+                $unitPriceId = $pivotData->pivot->unitprice_id;
+                $unitPrice = UnitPrice::find($unitPriceId)->price ?? 0;
+                $subtotal = $unitPrice * $item['quantity'];
+                $totalAmount += $subtotal;
+                $returnOrder->products()->attach($item['id'], [
+                    'unitprice_id' => $unitPriceId,
+                    'quantity' => $item['quantity'],
+                ]);
+            }
+            $returnOrder->update(['total_price' => $totalAmount]);
+            $returnOrder->invoice()->create([
+                'total_amount' => $totalAmount,
+                'invoice_number' => 'INV-' . Str::uuid(),
+            ]);
+            DB::commit();
+            return response()->json(['message' => 'Your return order has been successfully created!'], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Failed to create the return order',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
 
     public function store(OrderStoreRequest $request)
     {
@@ -74,8 +176,8 @@ class OrderController extends Controller
             $shipmentInfo = $request->get('shipmentInfo');
             $location = Location::create([
                 'address' => $shipmentInfo['address'],
-                'state' => $shipmentInfo['state'],
                 'city_id' => $shipmentInfo['city'],
+                'state' => 'test',
             ]);
             $order = Order::create([
                 'customer_id' => $customer->id,
@@ -104,6 +206,16 @@ class OrderController extends Controller
             }
             DB::commit();
 
+            $notification = Notification::create([
+                'resource_id' => $order->id,
+                'type' => 'order',
+                'role' => 'sale',
+                'message' => $customer->user->name . ' has made an order!'
+            ]);
+
+            // Broadcast the event
+            broadcast(new UserEvent($notification))->toOthers();
+
             return response()->json(['message' => 'Your order has been successfully created!'], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -130,7 +242,27 @@ class OrderController extends Controller
                 }
             }
             DB::commit();
+
             Mail::to($order->customer->user->email)->send(new OrderStatusUpdated($order, 'processing'));
+
+            $notification = Notification::create([
+                'resource_id' => $order->customer->id,
+                'type' => 'order',
+                'role' => 'customer',
+                'message' => 'Your Order '. substr($order->invoice->invoice_number, 0, 9). ' has been accepted!',
+            ]);
+            broadcast(new UserEvent($notification))->toOthers();
+
+            $notificationWarehouse = Notification::create([
+                'resource_id' => $order->id,
+                'type' => 'order',
+                'role' => 'warehouse',
+                'message' => substr($order->invoice->invoice_number, 0, 9). ' requires to be dispatched!'
+            ]);
+            // Broadcast the event
+            broadcast(new UserEvent($notificationWarehouse))->toOthers();
+
+
             return response()->json([
                 'message' => 'Order successfully accepted!',
                 'order_id' => $order->id,
@@ -151,7 +283,7 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    public function show(Request $request, Order $order): OrderResource
+    public function show( Order $order): OrderResource
     {
         return new OrderResource($order);
     }
