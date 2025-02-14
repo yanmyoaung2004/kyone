@@ -63,6 +63,7 @@ class OrderController extends Controller
         $orders = Order::with(['customer.user', 'location'])
             ->where('status', 'processing')
             ->get();
+
         $formattedData = $orders->map(function ($order) {
             return [
                 'id' => $order->id,
@@ -74,6 +75,12 @@ class OrderController extends Controller
         });
 
         return response()->json($formattedData);
+    }
+
+    public function getWarehouseProductData($orderId)
+    {
+        $orders = Order::with(['products'])->where('id', $orderId)->first();
+        return response()->json($orders->products);
     }
 
     public function index()

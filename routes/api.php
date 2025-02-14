@@ -135,3 +135,5 @@ Route::get('/messages/{customer_id}',[MessageController::class,'customerMessage'
 Route::post('/orders/create/return',[OrderController::class,'createReturn']);
 
 Route::get('/warehouse/orders/data', [OrderController::class,'getWarehouseData']);
+
+Route::get('warehouse/getproducts/{orderId}', [OrderController::class,'getWarehouseProductData']);
