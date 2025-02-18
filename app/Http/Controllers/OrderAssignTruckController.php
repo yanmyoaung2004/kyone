@@ -44,6 +44,14 @@ class OrderAssignTruckController extends Controller
                         'message' => 'Your Order '. substr($order->invoice->invoice_number, 0, 9). ' has been dispatched!',
                     ]);
                 broadcast(new UserEvent($notification))->toOthers();
+
+                $notification = Notification::create([
+                        'resource_id' => $order->customer->id,
+                        'type' => 'order',
+                        'role' => 'driver',
+                        'message' => 'Order '. substr($order->customer->id, 0, 9). ' has been assigned to your truck!',
+                    ]);
+                broadcast(new UserEvent($notification))->toOthers();
         }
 
         return response()->json([
@@ -98,6 +106,7 @@ class OrderAssignTruckController extends Controller
 
     public function assignedOrder($id){
         $truck = OrderAssignTruck::where('truck_id',$id)->with('order')->get();
+
         return response()->json(['truck'=>$truck]);
     }
 }

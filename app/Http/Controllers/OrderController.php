@@ -15,7 +15,6 @@ use App\Models\Location;
 use App\Models\Notification;
 use App\Models\Unitprice;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
@@ -70,7 +69,8 @@ class OrderController extends Controller
                 'id' => $order->id,
                 'customer' => $order->customer->user->name ?? 'Unknown',
                 'address' => $order->location->address ?? 'No address',
-                'eta' => 10,
+                'city' => $order->location->city ?? "No City",
+                'eta' => $order->location->city->eta,
                 'status' => 'pending',
             ];
         });
@@ -94,7 +94,25 @@ class OrderController extends Controller
                 'id' => $order->id,
                 'customer' => $order->customer->user->name ?? 'Unknown',
                 'address' => $order->location->address ?? 'No address',
-                'eta' => 10,
+                'eta' => $order->location->city->eta,
+                'status' => 'pending',
+            ];
+        });
+
+        return response()->json($formattedData);
+    }
+
+    public function getReturn()
+    {
+        $orders = Order::with(['customer.user', 'location'])
+            ->where('isReturn', true)
+            ->get();
+        $formattedData = $orders->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'customer' => $order->customer->user->name ?? 'Unknown',
+                'address' => $order->location->address ?? 'No address',
+                'eta' => $order->location->city->eta,
                 'status' => 'pending',
             ];
         });
@@ -138,6 +156,8 @@ class OrderController extends Controller
                 'customer_id' => $originalOrder->customer_id,
                 'location_id' => $originalOrder->location_id,
                 'status' => 'pending',
+                'isReturn' => true,
+                'return_id' => $originalOrder->id,
                 'total_price' => 0,
                 'eta' => 10,
             ]);
@@ -192,7 +212,7 @@ class OrderController extends Controller
                 'location_id' => $location->id,
                 'status' => 'pending',
                 'total_price' => $request->get('total'),
-                'eta' => 10,
+                'eta' => $location->city->eta,
             ]);
 
             $order->payment()->create([

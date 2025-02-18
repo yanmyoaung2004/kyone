@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class StockController extends Controller
 {

@@ -6,6 +6,7 @@ use App\Http\Requests\ReturnStoreRequest;
 use App\Http\Requests\ReturnUpdateRequest;
 use App\Http\Resources\ReturnCollection;
 use App\Http\Resources\ReturnResource;
+use App\Models\Order;
 use App\Models\OrderReturn;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,8 +15,7 @@ class OrderReturnController extends Controller
 {
     public function index(Request $request): ReturnCollection
     {
-        $returns = OrderReturn::all();
-
+        $returns = Order::where('isReturn', true)->get();
         return new ReturnCollection($returns);
     }
 

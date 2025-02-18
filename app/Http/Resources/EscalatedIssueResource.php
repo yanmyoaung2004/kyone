@@ -17,6 +17,7 @@ class EscalatedIssueResource extends JsonResource
             'description' => $this->description,
             'order_id' => $this->order_id,
             'driver_id' => $this->driver_id,
+            'status' => $this->status ?? "pending",
             'priority' => $this->priority,
         ];
     }

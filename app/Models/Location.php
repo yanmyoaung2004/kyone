@@ -28,4 +28,8 @@ class Location extends Model
     protected $casts = [
         'id' => 'integer',
     ];
+
+    public function city(){
+        return $this->belongsTo(City::class);
+    }
 }

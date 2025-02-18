@@ -38,7 +38,7 @@ class ServiceCenterController extends Controller
         return response()->json($serviceCenter);
     }
 
-    public function update(Request $request, $id)
+    public function update( $id,Request $request)
     {
         $serviceCenter = ServiceCenter::find($id);
         if (!$serviceCenter) {

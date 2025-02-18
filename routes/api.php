@@ -138,5 +138,6 @@ Route::post('/orders/create/return',[OrderController::class,'createReturn']);
 Route::get('/warehouse/orders/data', [OrderController::class,'getWarehouseData']);
 
 Route::get('warehouse/getproducts/{orderId}', [OrderController::class,'getWarehouseProductData']);
+Route::get('warehouse/getReturns/data', [OrderController::class,'getReturn']);
 Route::resource('service-centers', ServiceCenterController::class);
 
