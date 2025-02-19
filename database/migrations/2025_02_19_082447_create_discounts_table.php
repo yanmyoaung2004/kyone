@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_centers', function (Blueprint $table) {
+        Schema::create('discounts', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone');
-            $table->string('email')->unique();
-            $table->string('address');
-            $table->decimal('credit_limit', 15, 2)->default(0);
+            $table->string("discount_title");
+            $table->string("type");
+            $table->foreignId('product_id')->constrained();
+            $table->integer("discount");
+            $table->boolean("lock")->default(false);
+            $table->timestamp("start");
+            $table->timestamp("end");
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('service_centers');
+        Schema::dropIfExists('discounts');
     }
 };

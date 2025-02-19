@@ -16,6 +16,10 @@ models:
     price: decimal(10,2)
     product_id: id foreign
 
+  Buyingprice:
+    price: decimal(10,2)
+    product_id: id foreign
+
   Stock:
     product_id: id foreign
     quantity: integer
