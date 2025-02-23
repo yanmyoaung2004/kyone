@@ -86,6 +86,10 @@ A robust backend API service built with Laravel for MyanTech's logistics and del
 -   Token Authentication
 -   Role-based Access
 
+## 📊 Database Schema
+
+![Database Schema](db.png)
+
 ## 📋 Prerequisites
 
 -   PHP ^8.2

@@ -1,0 +1,326 @@
+Enum "complaints_status_enum" {
+  "open"
+  "in_progress"
+  "resolved"
+  "closed"
+}
+
+Enum "complaints_type_enum" {
+  "delayed"
+  "faulty"
+  "wrong"
+  "missing"
+}
+
+Enum "drivers_status_enum" {
+  "free"
+  "busy"
+}
+
+Enum "escalated_issues_priority_enum" {
+  "high"
+  "low"
+  "medium"
+}
+
+Enum "escalated_issues_status_enum" {
+  "pending"
+  "inprogress"
+  "resolved"
+}
+
+Enum "order_returns_status_enum" {
+  "pending"
+  "inprogress"
+  "delivered"
+  "cancelled"
+  "delayed"
+}
+
+Enum "orders_status_enum" {
+  "pending"
+  "processing"
+  "completed"
+  "cancelled"
+}
+
+Enum "payments_method_enum" {
+  "credit_card"
+  "paypal"
+  "cash"
+  "bank_transfer"
+}
+
+Enum "payments_status_enum" {
+  "pending"
+  "completed"
+  "failed"
+}
+
+Enum "trucks_status_enum" {
+  "free"
+  "busy"
+}
+
+Table "brands" {
+  "id" bigint [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+}
+
+Table "categories" {
+  "id" bigint [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    name [unique, name: "categories_name_unique"]
+  }
+}
+
+Table "cities" {
+  "id" bigint [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "eta" varchar(255) [default: NULL]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+}
+
+Table "complaints" {
+  "id" bigint [pk, not null, increment]
+  "customer_id" bigint [not null]
+  "order_id" bigint [default: NULL]
+  "description" text [not null]
+  "status" complaints_status_enum [not null]
+  "type" complaints_type_enum [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    customer_id [name: "complaints_customer_id_foreign"]
+    order_id [name: "complaints_order_id_foreign"]
+  }
+}
+
+Table "customers" {
+  "id" bigint [pk, not null, increment]
+  "user_id" bigint [not null]
+  "phone" varchar(255) [not null]
+  "address" varchar(255) [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    user_id [name: "customers_user_id_foreign"]
+  }
+}
+
+Table "drivers" {
+  "id" bigint [pk, not null, increment]
+  "user_id" bigint [not null]
+  "driver_license" varchar(255) [not null]
+  "nrc_number" varchar(255) [not null]
+  "phone" varchar(255) [not null]
+  "status" drivers_status_enum [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    driver_license [unique, name: "drivers_driver_license_unique"]
+    nrc_number [unique, name: "drivers_nrc_number_unique"]
+    user_id [name: "drivers_user_id_foreign"]
+  }
+}
+
+Table "escalated_issues" {
+  "id" bigint [pk, not null, increment]
+  "description" varchar(255) [not null]
+  "order_id" bigint [not null]
+  "driver_id" bigint [not null]
+  "priority" escalated_issues_priority_enum [not null]
+  "status" escalated_issues_status_enum [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+}
+
+Table "invoices" {
+  "id" bigint [pk, not null, increment]
+  "order_id" bigint [not null]
+  "invoice_number" varchar(255) [not null]
+  "total_amount" varchar(255) [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    invoice_number [unique, name: "invoices_invoice_number_unique"]
+    order_id [name: "invoices_order_id_foreign"]
+  }
+}
+
+Table "locations" {
+  "id" bigint [pk, not null, increment]
+  "address" varchar(255) [not null]
+  "state" varchar(255) [not null]
+  "city_id" bigint [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    city_id [name: "locations_city_id_foreign"]
+  }
+}
+
+Table "order_assign_trucks" {
+  "id" bigint [pk, not null, increment]
+  "order_id" bigint [not null]
+  "driver_id" bigint [not null]
+  "truck_id" bigint [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    order_id [name: "order_assign_trucks_order_id_foreign"]
+    driver_id [name: "order_assign_trucks_driver_id_foreign"]
+    truck_id [name: "order_assign_trucks_truck_id_foreign"]
+  }
+}
+
+Table "order_product" {
+  "order_id" bigint [not null]
+  "product_id" bigint [not null]
+  "unitprice_id" bigint [not null]
+  "quantity" int [not null]
+}
+
+Table "order_returns" {
+  "id" bigint [pk, not null, increment]
+  "order_id" bigint [not null]
+  "product_id" bigint [not null]
+  "complaint_id" bigint [not null]
+  "quantity" int [not null]
+  "reason" varchar(255) [not null]
+  "status" order_returns_status_enum [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    order_id [name: "order_returns_order_id_foreign"]
+    product_id [name: "order_returns_product_id_foreign"]
+    complaint_id [name: "order_returns_complaint_id_foreign"]
+  }
+}
+
+Table "orders" {
+  "id" bigint [pk, not null, increment]
+  "customer_id" bigint [not null]
+  "location_id" bigint [not null]
+  "status" orders_status_enum [not null]
+  "total_price" varchar(255) [not null]
+  "isReturn" tinyint(1) [not null, default: '0']
+  "return_id" int [default: NULL]
+  "eta" varchar(255) [default: NULL]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    customer_id [name: "orders_customer_id_foreign"]
+    location_id [name: "orders_location_id_foreign"]
+  }
+}
+
+Table "payments" {
+  "id" bigint [pk, not null, increment]
+  "order_id" bigint [not null]
+  "amount" varchar(255) [not null]
+  "method" payments_method_enum [not null]
+  "status" payments_status_enum [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    order_id [name: "payments_order_id_foreign"]
+  }
+}
+
+Table "products" {
+  "id" bigint [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "description" text
+  "category_id" bigint [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+  "brand_id" bigint [default: NULL]
+
+  Indexes {
+    category_id [name: "products_category_id_foreign"]
+    brand_id [name: "products_brand_id_foreign"]
+  }
+}
+
+Table "roles" {
+  "id" bigint [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "guard_name" varchar(255) [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    (name, guard_name) [unique, name: "roles_name_guard_name_unique"]
+  }
+}
+
+Table "stocks" {
+  "id" bigint [pk, not null, increment]
+  "product_id" bigint [not null]
+  "quantity" int [not null]
+  "safety_stock" int [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    product_id [name: "stocks_product_id_foreign"]
+  }
+}
+
+Table "trucks" {
+  "id" bigint [pk, not null, increment]
+  "license_plate" varchar(255) [not null]
+  "status" trucks_status_enum [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    license_plate [unique, name: "trucks_license_plate_unique"]
+  }
+}
+
+Table "unitprices" {
+  "id" bigint [pk, not null, increment]
+  "product_id" bigint [not null]
+  "price" varchar(255) [not null]
+  "created_at" timestamp [default: NULL]
+  "updated_at" timestamp [default: NULL]
+
+  Indexes {
+    product_id [name: "unitprices_product_id_foreign"]
+  }
+}
+
+Ref "complaints_customer_id_foreign":"customers"."id" < "complaints"."customer_id"
+Ref "complaints_order_id_foreign":"orders"."id" < "complaints"."order_id"
+Ref "locations_city_id_foreign":"cities"."id" < "locations"."city_id"
+Ref "order_assign_trucks_driver_id_foreign":"drivers"."id" < "order_assign_trucks"."driver_id" [delete: cascade]
+Ref "order_assign_trucks_order_id_foreign":"orders"."id" < "order_assign_trucks"."order_id" [delete: cascade]
+Ref "order_assign_trucks_truck_id_foreign":"trucks"."id" < "order_assign_trucks"."truck_id" [delete: cascade]
+Ref "order_returns_complaint_id_foreign":"complaints"."id" < "order_returns"."complaint_id"
+Ref "order_returns_order_id_foreign":"orders"."id" < "order_returns"."order_id"
+Ref "order_returns_product_id_foreign":"products"."id" < "order_returns"."product_id"
+Ref "orders_customer_id_foreign":"customers"."id" < "orders"."customer_id"
+Ref "orders_location_id_foreign":"locations"."id" < "orders"."location_id"
+Ref "payments_order_id_foreign":"orders"."id" < "payments"."order_id"
+Ref "products_brand_id_foreign":"brands"."id" < "products"."brand_id" [delete: set null]
+Ref "products_category_id_foreign":"categories"."id" < "products"."category_id"
+Ref "stocks_product_id_foreign":"products"."id" < "stocks"."product_id"
+Ref "unitprices_product_id_foreign":"products"."id" < "unitprices"."product_id"
