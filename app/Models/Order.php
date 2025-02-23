@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -18,9 +19,12 @@ class Order extends Model
      */
     protected $fillable = [
         'customer_id',
+        'location_id',
         'status',
         'total_price',
-        'payment_status',
+        'eta',
+        'isReturn',
+        'return _id'
     ];
 
     /**
@@ -31,15 +35,43 @@ class Order extends Model
     protected $casts = [
         'id' => 'integer',
         'customer_id' => 'integer',
+        'location_id' => 'integer',
     ];
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class);
+        return $this->belongsToMany(Product::class)
+            ->withPivot('unitprice_id', 'quantity')
+            ->with('media');
     }
+
 
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function orderAssignTruck()
+    {
+        return $this->hasOne(OrderAssignTruck::class);
+    }
+
+    public function orderRetrun(){
+        return $this->hasMany(OrderReturn::class);
     }
 }

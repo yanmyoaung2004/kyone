@@ -8,8 +8,8 @@ models:
     name: string
     description: text nullable
     category_id: id foreign
-    unitprice_id: id foreign
     relationships:
+      hasOne: Unitprice, Stock
       belongsToMany: Order
 
   Unitprice:
@@ -35,11 +35,13 @@ models:
 
   Order:
     customer_id: id foreign
-    status: enum:pending,processing,completed,cancelled
+    location_id: id foreign
+    status: enum:pending,inprogress,delivered,cancelled,delayed,
     total_price: decimal(10,2)
-    payment_status: enum:pending,paid,failed
+    eta: string nullable
 
     relationships:
+      hasOne: Payment, Invoice
       belongsToMany: Product
 
   Payment:
@@ -50,11 +52,7 @@ models:
 
   Invoice:
     order_id: id foreign
-    invoice_number: string unique
-    issue_date: timestamp
-    due_date: timestamp
     total_amount: decimal(10,2)
-    status: enum:unpaid,paid,cancelled
 
   Complaint:
     customer_id: id foreign
@@ -63,3 +61,23 @@ models:
     description: text
     status: enum:open,in_progress,resolved,closed
     type: enum:delayed,faulty,wrong,missing
+
+  Location:
+    address: string
+    state: string
+    city: string
+
+  EscalatedIssue:
+    description: string
+    order_id: id
+    driver_id: id
+    status: enum:pending,inprogress,resolved
+    priority: enum:high,low,medium
+
+  OrderReturn:
+    order_id: id foreign
+    product_id: id foreign
+    complaint_id: id foreign
+    quantity: integer
+    reason: string
+    status: enum:pending,inprogress,delivered,cancelled,delayed

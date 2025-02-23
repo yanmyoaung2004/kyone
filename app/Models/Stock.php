@@ -19,6 +19,7 @@ class Stock extends Model
         'product_id',
         'quantity',
         'safety_stock',
+        'unitprice_id'
     ];
 
     /**
@@ -29,10 +30,17 @@ class Stock extends Model
     protected $casts = [
         'id' => 'integer',
         'product_id' => 'integer',
+        'unitprice_id' => 'integer',
     ];
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function unitprice(): BelongsTo
+    {
+        return $this->belongsTo(Unitprice::class);
+    }
+
 }

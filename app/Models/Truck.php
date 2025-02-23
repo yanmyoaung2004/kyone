@@ -16,6 +16,7 @@ class Truck extends Model
      */
     protected $fillable = [
         'license_plate',
+        'status'
     ];
 
     /**
@@ -26,4 +27,10 @@ class Truck extends Model
     protected $casts = [
         'id' => 'integer',
     ];
+
+    public function assignedOrders()
+    {
+        return $this->hasMany(OrderAssignTruck::class, 'truck_id');
+    }
+
 }

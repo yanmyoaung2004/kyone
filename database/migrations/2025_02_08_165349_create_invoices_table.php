@@ -17,10 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained();
             $table->string('invoice_number')->unique();
-            $table->timestamp('issue_date');
-            $table->timestamp('due_date');
             $table->string('total_amount');
-            $table->enum('status', ["unpaid","paid","cancelled"]);
             $table->timestamps();
         });
 
@@ -34,4 +31,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('invoices');
     }
+
+    
 };

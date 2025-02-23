@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained();
             $table->foreignId('order_id')->nullable()->constrained();
-            $table->string('subject');
             $table->text('description');
             $table->enum('status', ["open","in_progress","resolved","closed"]);
             $table->enum('type', ["delayed","faulty","wrong","missing"]);

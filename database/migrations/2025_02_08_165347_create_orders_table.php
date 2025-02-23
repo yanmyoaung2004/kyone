@@ -16,15 +16,17 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained();
-            $table->enum('status', ["pending","processing","completed","cancelled"]);
+            $table->foreignId('location_id')->constrained();
+            $table->enum('status', ["pending", "processing", "completed", "cancelled"]);
             $table->string('total_price');
-            $table->enum('payment_status', ["pending","paid","failed"]);
+            $table->boolean('isReturn')->default(false);
+            $table->integer('return_id')->nullable();
+            $table->string('eta')->nullable();
             $table->timestamps();
         });
 
         Schema::enableForeignKeyConstraints();
     }
-
     /**
      * Reverse the migrations.
      */
@@ -32,4 +34,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('orders');
     }
+
 };
