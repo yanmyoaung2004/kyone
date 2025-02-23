@@ -1,68 +1,136 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MyanTech Logistics Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A robust backend API service built with Laravel for MyanTech's logistics and delivery management operations.
 
-fdslfkj
+## 🚀 Key Features
 
-## About Laravel
+-   **Customer Portal**: Product browsing, shopping cart, and profile management
+-   **Order Management**: Processing, tracking, invoicing, and delivery scheduling
+-   **Inventory Control**: Stock management, warehouse allocation, and batch tracking
+-   **User Management**: Role-based access control for customers, sales managers, drivers, and warehouse managers
+-   **Delivery Management**: Route optimization, tracking, and escalation handling
+-   **Real-time Updates**: Live order status, chat support, and analytics
+-   **Reporting & Analytics**: Customizable reports and performance metrics
+-   **Payment Processing**: Multiple payment methods and invoice management
+-   **Security**: Role-based permissions, 2FA, and data encryption
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 👥 Role Permissions
 
--   [Simple, fast routing engine](https://laravel.com/docs/routing).
--   [Powerful dependency injection container](https://laravel.com/docs/container).
--   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
--   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
--   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
--   [Robust background job processing](https://laravel.com/docs/queues).
--   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Customer
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   Browse products and manage shopping cart
+-   Place and track orders
+-   View order history
+-   Download invoices
+-   Submit complaints and feedback
+-   Chat with sales representatives
+-   Manage user profile
 
-## Learning Laravel
+### Sales Manager
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   View product and order metrics
+-   Process and manage orders
+-   Track delivery status
+-   Handle customer inquiries and complaints
+-   Generate sales reports
+-   View driver escalations
+-   Track returns
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Driver
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+-   View assigned deliveries
+-   Update delivery status
+-   Track routes
+-   Handle escalations
+-   Upload delivery proof
+-   Track performance
 
-## Laravel Sponsors
+### Warehouse Manager
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+-   View stocks and trucks metrics
+-   Manage inventory and products
+-   Process transfers
+-   Handle returns
+-   Manage service center operations
+-   Oversee location/city management
+-   Coordinate truck fleet management
+-   Assign orders to trucks or service centers
 
-### Premium Partners
+## 🛠 Tech Stack
 
--   **[Vehikl](https://vehikl.com/)**
--   **[Tighten Co.](https://tighten.co)**
--   **[WebReinvent](https://webreinvent.com/)**
--   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
--   **[64 Robots](https://64robots.com)**
--   **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
--   **[Cyber-Duck](https://cyber-duck.co.uk)**
--   **[DevSquad](https://devsquad.com/hire-laravel-developers)**
--   **[Jump24](https://jump24.co.uk)**
--   **[Redberry](https://redberry.international/laravel/)**
--   **[Active Logic](https://activelogic.com)**
--   **[byte5](https://byte5.de)**
--   **[OP.GG](https://op.gg)**
+### Backend
 
-## Contributing
+-   **PHP 8.2**
+-   **Laravel 11**
+-   **MySQL/PostgreSQL**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Key Packages
 
-## Code of Conduct
+-   Laravel Sanctum (Authentication)
+-   Pusher(WebSockets)
+-   Spatie Permission (ACL)
+-   Spatie Media Library (File Management)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### APIs & Integration
 
-## Security Vulnerabilities
+-   RESTful API
+-   WebSocket Events
+-   SMS/Email Services
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Deployment
 
-## License
+-   AWS
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Security
+
+-   Token Authentication
+-   Role-based Access
+
+## 📋 Prerequisites
+
+-   PHP ^8.2
+-   Composer
+-   Node.js & NPM
+-   MySQL/PostgreSQL
+
+## 🛠 Quick Start
+
+1. Clone and install dependencies:
+
+```bash
+git clone <repository-url>
+composer install
+npm install
+```
+
+2. Setup environment:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+```
+
+3. Start development server:
+
+```bash
+php artisan serve
+npm run dev
+```
+
+## 📚 Documentation
+
+API documentation: `/api/documentation`
+
+```bash
+php artisan l5-swagger:generate
+```
+
+## 🔒 Security & Support
+
+-   Security issues: Email [kyaone.hackathon@gmail.com]
+-   Support: Create an issue or email [kyaone.hackathon@gmail.com]
+
+## 📄 License
+
+MIT License - see [LICENSE.md](LICENSE.md)
