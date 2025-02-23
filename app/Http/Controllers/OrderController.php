@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use App\Http\Resources\OrderResource;
 use App\Http\Requests\OrderStoreRequest;
 use App\Mail\OrderStatusUpdated;
+use App\Models\City;
 use App\Models\Customer;
 use App\Models\Location;
 use App\Models\Notification;
@@ -202,9 +203,16 @@ class OrderController extends Controller
             $customer = Customer::where('user_id', $request->get('customer_id'))->first();
             $items = $request->get('items');
             $shipmentInfo = $request->get('shipmentInfo');
+            $locationChoice = $request->get('locationChoice');
+            $city = $shipmentInfo['city'];
+            if($locationChoice == 'map'){
+                $cityData = City::where('name', $city)->first();
+                $city = $cityData->id;
+
+            }
             $location = Location::create([
                 'address' => $shipmentInfo['address'],
-                'city_id' => $shipmentInfo['city'],
+                'city_id' => $city,
                 'state' => 'test',
             ]);
             $order = Order::create([
