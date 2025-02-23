@@ -124,11 +124,7 @@ npm run dev
 
 ## 📚 Documentation
 
-API documentation: `/api/documentation`
-
-```bash
-php artisan l5-swagger:generate
-```
+API documentation: `https://modern-opossum-singular.ngrok-free.app/docs/api#/`
 
 ## 🔒 Security & Support
 
