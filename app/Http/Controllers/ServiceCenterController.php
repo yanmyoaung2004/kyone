@@ -14,6 +14,8 @@ class ServiceCenterController extends Controller
         return response()->json($serviceCenters);
     }
 
+
+
     public function store(Request $request)
     {
         try {

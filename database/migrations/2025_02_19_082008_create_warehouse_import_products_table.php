@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('warehouse_import_products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('purchase_product_id')->constrained();
+            $table->foreignId('warehouse_id')->constrained();
             $table->integer('quantity');
             $table->timestamps();
         });

@@ -24,7 +24,9 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\UnitpriceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderReturnController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ServiceCenterController;
+use App\Http\Controllers\WarehouseController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -70,11 +72,6 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::apiResource('/locations', LocationController::class);
-
-
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::post('/logout', [AuthController::class, 'logout']);
-// });
 
 Route::get('/truck_assgiend_order/{id}', [OrderAssignTruckController::class, 'assignedOrder']);
 Route::get('/orders/on_progress', [OrderController::class, 'onProgressOrders']);
@@ -141,3 +138,18 @@ Route::get('warehouse/getproducts/{orderId}', [OrderController::class,'getWareho
 Route::get('warehouse/getReturns/data', [OrderController::class,'getReturn']);
 Route::resource('service-centers', ServiceCenterController::class);
 
+
+//-----------------------------------------------------------------------------------------------------------------------
+//verison 2 new features added
+Route::prefix('warehouses')->group(function () {
+    Route::get('/', [WarehouseController::class, 'index']);
+    Route::post('/', [WarehouseController::class, 'store']);
+    Route::get('/{id}', [WarehouseController::class, 'show']);
+    Route::post('/update/{id}', [WarehouseController::class, 'update']);
+    Route::delete('/{id}', [WarehouseController::class, 'destroy']);
+    Route::get('/product/getWarehouseProduct/{id}', [WarehouseController::class, 'getWarehouseProduct']);
+    Route::post('/product/transferWarehouse/transfer', [WarehouseController::class, 'warehouseTransfer']);
+});
+Route::post('/purchase/create', [PurchaseController::class, 'createPurchase']);
+Route::get('/purchase/data/get', [PurchaseController::class, 'getPurchaseData']);
+Route::get('/purchase/data/product/{invoice_number}', [PurchaseController::class, 'getPurchaseProductData']);

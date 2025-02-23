@@ -9,12 +9,12 @@ class Purchase extends Model
     protected $table = 'purchases';
 
     protected $fillable = [
-        'supplier_id',
+        'service_center_id',
         'invoice_number',
     ];
 
-        public function supplier()
+        public function serviceCenter()
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(ServiceCenter::class);
     }
 }

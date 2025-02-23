@@ -15,7 +15,7 @@ class EscalatedIssue extends Model
      *
      * @var array
      */
-    protected $fillable = [
+        protected $fillable = [
         'description',
         'order_id',
         'driver_id',
