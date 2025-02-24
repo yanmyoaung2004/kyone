@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\MessageSent;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AuthController;
@@ -58,7 +59,7 @@ Route::apiResource('stocks', StockController::class);
 
 Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class)->except(['update']);
-Route::post('/products/{id}', [ProductController::class, 'update']);
+Route::post('/products/{id}', [ProductController::class, 'updatje']);
 Route::apiResource('orderAssignTrucks', OrderAssignTruckController::class);
 
 
@@ -153,3 +154,15 @@ Route::prefix('warehouses')->group(function () {
 Route::post('/purchase/create', [PurchaseController::class, 'createPurchase']);
 Route::get('/purchase/data/get', [PurchaseController::class, 'getPurchaseData']);
 Route::get('/purchase/data/product/{invoice_number}', [PurchaseController::class, 'getPurchaseProductData']);
+
+Route::get('/test', function () {
+    $message = new \App\Models\Message();
+    $message->sender_id = 1;
+    $message->receiver_id = 1;
+    $message->message = 'Hello';
+    $message->role = 'sale';
+    // $message->save();
+    broadcast(new MessageSent($message));
+    return response()->json(['message' => $message]);
+});
+

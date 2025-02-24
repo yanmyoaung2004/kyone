@@ -53,39 +53,34 @@ class AuthController extends Controller
     // ✅ LOGIN
     public function login(Request $request)
     {
-        try{
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            throw ValidationException::withMessages([
-                'message' => 'User not found!',
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
             ]);
-        }
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'message' => 'Wrong password!',
+    
+            $user = User::where('email', $request->email)->first();
+    
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'message' => 'Invalid credentials!',
+                ]);
+            }
+    
+            $token = $user->createToken('auth_token')->plainTextToken;
+            $user->roles = $user->getRoleNames();
+            return response()->json([
+                'message' => 'Login successful!',
+                'user' => $user,
+                'token' => $token,
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => $e->errors(),
+            ], 422);
         }
-        $token = $user->createToken('auth_token')->plainTextToken;
-        $user->roles = $user->getRoleNames();
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ]);
-
-    } catch (ValidationException $e) {
-        return response()->json([
-            'message'=> $e->errors(),
-
-        ], 422);
     }
-    }
+    
 
 
     public function logout(Request $request)

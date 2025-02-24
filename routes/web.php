@@ -10,3 +10,4 @@ Route::get('/users', function () {
     $users = User::with('roles')->get();
     return response()->json($users);
 });
+
