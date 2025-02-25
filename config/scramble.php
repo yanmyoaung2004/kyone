@@ -77,8 +77,8 @@ return [
      * ```
      */
     'servers' => [
-        'Local' => 'api',
         'Prod' => 'https://modern-opossum-singular.ngrok-free.app/api',
+        'Local' => 'api',
     ],
 
     'middleware' => [
