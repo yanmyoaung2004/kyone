@@ -35,20 +35,20 @@ class OrderController extends Controller
         $order->status = $newStatus;
         $order->save();
 
-        if($newStatus == 'completed'){
+        if ($newStatus == 'completed') {
             $notification = Notification::create([
-                    'resource_id' => $order->customer->id,
-                    'type' => 'order',
-                    'role' => 'customer',
-                    'message' => 'Your Order '. substr($order->invoice->invoice_number, 0, 9). ' has been delivered!',
+                'resource_id' => $order->customer->id,
+                'type' => 'order',
+                'role' => 'customer',
+                'message' => 'Your Order ' . substr($order->invoice->invoice_number, 0, 9) . ' has been delivered!',
             ]);
             broadcast(new UserEvent($notification))->toOthers();
 
             $notificationSale = Notification::create([
-                    'resource_id' => $order->customer->id,
-                    'type' => 'order',
-                    'role' => 'sale',
-                    'message' => substr($order->invoice->invoice_number, 0, 9). ' has been delivered!',
+                'resource_id' => $order->customer->id,
+                'type' => 'order',
+                'role' => 'sale',
+                'message' => substr($order->invoice->invoice_number, 0, 9) . ' has been delivered!',
             ]);
             broadcast(new UserEvent($notificationSale))->toOthers();
         }
@@ -277,7 +277,7 @@ class OrderController extends Controller
                 'resource_id' => $order->customer->id,
                 'type' => 'order',
                 'role' => 'customer',
-                'message' => 'Your Order '. substr($order->invoice->invoice_number, 0, 9). ' has been accepted!',
+                'message' => 'Your Order ' . substr($order->invoice->invoice_number, 0, 9) . ' has been accepted!',
             ]);
             broadcast(new UserEvent($notification))->toOthers();
 
@@ -285,7 +285,7 @@ class OrderController extends Controller
                 'resource_id' => $order->id,
                 'type' => 'order',
                 'role' => 'warehouse',
-                'message' => substr($order->invoice->invoice_number, 0, 9). ' requires to be dispatched!'
+                'message' => substr($order->invoice->invoice_number, 0, 9) . ' requires to be dispatched!'
             ]);
             // Broadcast the event
             broadcast(new UserEvent($notificationWarehouse))->toOthers();
@@ -311,7 +311,7 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    public function show( Order $order): OrderResource
+    public function show(Order $order): OrderResource
     {
         return new OrderResource($order);
     }
@@ -322,5 +322,11 @@ class OrderController extends Controller
         $order->delete();
 
         return response()->noContent();
+    }
+
+    public function getTruckAndDriverByOrderId($orderId)
+    {
+        $order = Order::with('orderAssignTruck.truck', 'orderAssignTruck.driver.user')->find($orderId);
+        return response()->json($order);
     }
 }
