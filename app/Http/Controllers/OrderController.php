@@ -71,7 +71,7 @@ class OrderController extends Controller
                 'address' => $order->location->address ?? 'No address',
                 'city' => $order->location->city ?? "No City",
                 'eta' => $order->location->city->eta,
-                'status' => 'pending',
+                'status' => $order->status,
             ];
         });
 
@@ -95,6 +95,8 @@ class OrderController extends Controller
                 'customer' => $order->customer->user->name ?? 'Unknown',
                 'address' => $order->location->address ?? 'No address',
                 'eta' => $order->location->city->eta,
+                'isReturn' => $order->isReturn,
+                'return_id' => $order->return_id,
                 'status' => 'pending',
             ];
         });
