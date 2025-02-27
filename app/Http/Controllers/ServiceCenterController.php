@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ServiceCenterRequest;
@@ -18,9 +19,11 @@ class ServiceCenterController extends Controller
     {
         try {
 
-            $validated = $request->validate([ 'name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:service_centers,phone']);
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'location' => 'required|string|max:255',
+                'phone' => 'required|string|max:20|unique:service_centers,phone'
+            ]);
 
             $serviceCenter = ServiceCenter::create($validated);
             return response()->json(['message' => 'Service center created successfully!', 'data' => $serviceCenter], 201);
@@ -38,7 +41,7 @@ class ServiceCenterController extends Controller
         return response()->json($serviceCenter);
     }
 
-    public function update( $id,Request $request)
+    public function update($id, Request $request)
     {
         $serviceCenter = ServiceCenter::find($id);
         if (!$serviceCenter) {
@@ -46,7 +49,7 @@ class ServiceCenterController extends Controller
         };
 
         try {
-            $serviceCenter->update($request);
+            $serviceCenter->update($request->all());
             return response()->json(['message' => 'Service center updated successfully!', 'data' => $serviceCenter]);
         } catch (QueryException $e) {
             return response()->json(['error' => 'Failed to update service center!'], 500);
