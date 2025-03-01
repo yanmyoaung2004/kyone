@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\Warehouse;
 use App\Models\WarehouseImportProduct;
 use App\Models\WarehouseProduct;
@@ -246,5 +248,119 @@ class WarehouseController extends Controller
             ], 500);
         }
     }
+
+    public function warehouseOrderAvailability(Request $request)
+    {
+        $warehouseName = $request->get('warehouse');
+        $warehouse = Warehouse::where('address', $warehouseName)->first();
+        if (!$warehouse) {
+            return response()->json(['status' => 'Warehouse not found'], 404);
+        }
+        $orders = $request->get('orders');
+        $orderProducts = Order::with('products')->whereIn('id', $orders)->get()->pluck('products')->flatten();
+
+
+        $productsGroupedById = $orderProducts->groupBy('id');
+
+        $insufficientStock = [];
+
+        foreach ($productsGroupedById as $productId => $groupedProducts) {
+            $requiredQuantity = $groupedProducts->sum(function($product) {
+                return $product->pivot->quantity;
+            });
+            $productData = Product::find($productId);
+
+            $warehouseProduct = WarehouseProduct::where([
+                'warehouse_id' => $warehouse->id,
+                'product_id' => $productId,
+            ])->first();
+
+
+            if (!$warehouseProduct) {
+                $insufficientStock[] = [
+                    'status' => 'Product not found in warehouse',
+                    'product_id' => $productId,
+                    'product_name' => $productData->name,
+                    'available_quantity' => 0,
+                    'required_quantity' => $requiredQuantity
+                ];
+                continue;
+            }
+
+            if ($warehouseProduct->quantity < $requiredQuantity) {
+                $insufficientStock[] = [
+                    'status' => 'Product not enough in ' . $warehouse->name,
+                    'product_id' => $productId,
+                    'product_name' => $productData->name,
+                    'available_quantity' => $warehouseProduct->quantity,
+                    'required_quantity' => $requiredQuantity
+                ];
+               continue;
+            }
+        }
+        if (count($insufficientStock) > 0) {
+            return response()->json(['data' => $insufficientStock, 'success' => false]);
+        }
+        return response()->json(['status' => 'All orders can be fulfilled', 'success' => true, 'warehouseId' => $warehouse->id]);
+    }
+
+    public function warehousesThatCanFulfillOrders(Request $request)
+    {
+        $orders = $request->get('orders');
+
+        if (!$orders || !is_array($orders)) {
+            return response()->json(['status' => 'Invalid orders input', 'success' => false], 400);
+        }
+        $orderProducts = Order::with('products')
+            ->whereIn('id', $orders)
+            ->get()
+            ->pluck('products')
+            ->flatten();
+
+        $productsGroupedById = $orderProducts->groupBy('id');
+
+        $requiredQuantities = $productsGroupedById->mapWithKeys(function ($groupedProducts, $productId) {
+            return [$productId => $groupedProducts->sum(fn($product) => $product->pivot->quantity)];
+        });
+        $warehouses = Warehouse::all();
+
+        $fulfillingWarehouses = [];
+
+        foreach ($warehouses as $warehouse) {
+            $canFulfill = true;
+
+            foreach ($requiredQuantities as $productId => $requiredQuantity) {
+                $productData = Product::find($productId);
+                $warehouseProduct = WarehouseProduct::where([
+                    'warehouse_id' => $warehouse->id,
+                    'product_id' => $productId,
+                ])->first();
+
+                if (!$warehouseProduct || $warehouseProduct->quantity < $requiredQuantity) {
+                    $canFulfill = false;
+                    break;
+                }
+            }
+
+            if ($canFulfill) {
+                $fulfillingWarehouses[] = [
+                    'warehouse_id' => $warehouse->id,
+                    'product_name' => $productData->name,
+                    'warehouse_name' => $warehouse->name,
+                    'warehouse_address' => $warehouse->address
+                ];
+            }
+        }
+
+        if (empty($fulfillingWarehouses)) {
+            return response()->json(['status' => 'No warehouse can fulfill all orders', 'success' => false, 'data' => []], 200);
+        }
+
+        return response()->json(['data' => $fulfillingWarehouses, 'success' => true]);
+    }
+
+
+
+
 
 }

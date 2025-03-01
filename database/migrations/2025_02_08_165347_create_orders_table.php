@@ -22,6 +22,9 @@ return new class extends Migration
             $table->boolean('isReturn')->default(false);
             $table->integer('return_id')->nullable();
             $table->string('eta')->nullable();
+            $table->string('phone');
+            $table->string('name');
+            $table->text('note')->nullable();
             $table->timestamps();
         });
 

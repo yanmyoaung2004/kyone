@@ -17,9 +17,9 @@ class EscalatedIssue extends Model
      */
         protected $fillable = [
         'description',
-        'order_id',
         'driver_id',
         'status',
+        'route_key',
         'priority',
     ];
 
@@ -30,14 +30,29 @@ class EscalatedIssue extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'order_id' => 'integer',
         'driver_id' => 'integer',
     ];
 
-    public function order(): BelongsTo
+    public function getCity()
     {
-        return $this->belongsTo(Order::class);
+        $orderAssignTruck = OrderAssignTruck::where('route_key', $this->route_key)->first();
+
+        if ($orderAssignTruck && $orderAssignTruck->order) {
+            return $orderAssignTruck->order->location->city->name;
+        }
+        return null;
     }
+
+    public function getTruck()
+    {
+        $orderAssignTruck = OrderAssignTruck::where('route_key', $this->route_key)->first();
+
+        if ($orderAssignTruck && $orderAssignTruck->order) {
+            return $orderAssignTruck->truck->license_plate;
+        }
+        return null;
+    }
+
 
     public function driver(): BelongsTo
     {

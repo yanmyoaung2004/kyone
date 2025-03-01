@@ -24,6 +24,7 @@ class Product extends Model implements HasMedia
         'name',
         'description',
         'category_id',
+        'unitprice_id'
     ];
 
     /**
@@ -36,9 +37,10 @@ class Product extends Model implements HasMedia
         'category_id' => 'integer',
     ];
 
-    public function unitprice(): HasOne
+
+    public function unitPrice(): BelongsTo
     {
-        return $this->hasOne(Unitprice::class);
+        return $this->belongsTo(Unitprice::class, 'unitprice_id', 'id');
     }
 
     public function stock(): HasOne

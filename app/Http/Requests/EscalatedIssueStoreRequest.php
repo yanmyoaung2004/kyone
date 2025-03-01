@@ -21,8 +21,6 @@ class EscalatedIssueStoreRequest extends FormRequest
     {
         return [
             'description' => ['required', 'string'],
-            'order_id' => ['required', 'exists:orders,id'],
-            'driver_id' => ['required', 'exists:drivers,id'],
             'priority' => ['required', 'in:high,low,medium'],
         ];
     }

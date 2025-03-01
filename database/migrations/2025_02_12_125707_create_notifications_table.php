@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('notification', function (Blueprint $table) {
             $table->id();
-            $table->integer("resource_id");
+            $table->integer("resource_id")->nullable();
             $table->enum("type",['truck','order','driver','customer','stock','product']);
             $table->enum("role",['customer','warehouse','driver','sale']);
             $table->text('message');

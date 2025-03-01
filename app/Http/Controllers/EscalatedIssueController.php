@@ -6,7 +6,9 @@ use App\Http\Requests\EscalatedIssueStoreRequest;
 use App\Http\Requests\EscalatedIssueUpdateRequest;
 use App\Http\Resources\EscalatedIssueCollection;
 use App\Http\Resources\EscalatedIssueResource;
+use App\Models\Driver;
 use App\Models\EscalatedIssue;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -14,14 +16,31 @@ class EscalatedIssueController extends Controller
 {
     public function index()
     {
-        $escalatedIssues = EscalatedIssue::with('driver.user', 'order.invoice', 'order.customer.user')->orderBy('created_at', 'desc')->get();
+        $escalatedIssues = EscalatedIssue::with('driver.user')->orderBy('created_at', 'desc')->get();
+        $escalatedIssues = $escalatedIssues->map(function ($escalatedIssue){
+            $city = $escalatedIssue->getCity();
+            $truck = $escalatedIssue->getTruck();
+            $escalatedIssue->city = $city;
+            $escalatedIssue->truck = $truck;
+            return $escalatedIssue;
+        });
         return response()->json($escalatedIssues);
     }
 
-    public function store(EscalatedIssueStoreRequest $request): EscalatedIssueResource
+    public function store(Request $request)
     {
-        $escalatedIssue = EscalatedIssue::create($request->validated());
+        $driver = Driver::where('user_id',$request->get('driver_id'))->first();
+        if(!$driver){
+            return response()->json("Driver does not exist");
+        }
 
+        $escalatedIssue = EscalatedIssue::create([
+            'description' => $request->get('description'),
+            'route_key' => $request->get('route_key'),
+            'driver_id' => $driver->id,
+            'priority' => $request->get('priority'),
+            'status' => 'pending',
+        ]);
         return new EscalatedIssueResource($escalatedIssue);
     }
 
@@ -44,9 +63,14 @@ class EscalatedIssueController extends Controller
         return response()->noContent();
     }
 
-    public function updateStatus($id){
+    public function updateStatus($id, Request $request){
+        $status = $request->get('status');
         $escalatedIssue = EscalatedIssue::find($id);
-
+        if(!$escalatedIssue){
+            return response()->json("Escalated issue not found");
+        }
+        $escalatedIssue->status = $status;
+        $escalatedIssue->save();
         return response()->json($escalatedIssue);
     }
 }

@@ -19,7 +19,6 @@ class Stock extends Model
         'product_id',
         'quantity',
         'safety_stock',
-        'unitprice_id'
     ];
 
     /**

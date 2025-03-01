@@ -4,19 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Events\UserEvent;
 use App\Models\Notification;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
-    public function index(){
+    public function index($userId){
         try{
-            $notification = Notification::orderBy('created_at', 'desc')->get();
-            return response()->json($notification);
+            $userRoles = User::where('id',$userId)->first()->getRoleNames();
+            $notifications = [];
+            foreach ($userRoles as $role) {
+                $roleNotifications = Notification::where('role',$role)->orderBy('created_at', 'desc')->limit(10)->get();
+                $notifications = array_merge($notifications, $roleNotifications->toArray());
+            }
+
+            return response()->json($notifications);
            }catch(Exception $e){
             return response()->json(['message'=>"Failed to get notification",'error'=>$e->getMessage()]);
            }
     }
+
     public function create(Request $request)
     {
         try {

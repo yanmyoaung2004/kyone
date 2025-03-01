@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('eta')->nullable();
+            $table->string('shippingCost')->default(0);
             $table->timestamps();
         });
     }

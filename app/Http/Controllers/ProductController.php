@@ -27,11 +27,14 @@ class ProductController extends Controller
             'description' => $request->description,
         ]);
 
-        Unitprice::create([
+        $price = Unitprice::create([
             'product_id' => $product->id,
             'price' => $request->price,
         ]);
 
+        $product->update([
+            'unitprice_id' => $price->id
+        ]);
 
         if ($request->hasFile('image')) {
             $product->addMedia($request->file('image'))->toMediaCollection('products');
@@ -40,7 +43,7 @@ class ProductController extends Controller
         Stock::create([
             'product_id' => $product->id,
             'quantity' => 0,
-            'safety_stock' => 0
+            'safety_stock' => 0,
         ]);
 
         $returnProductData = Product::with('unitprice', 'category')->find($product->id);
@@ -64,26 +67,37 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, $id)
     {
+        $price = $request->get('price');
         $product = Product::find($id);
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
+        $priceData = Unitprice::where(['price'=> $price, 'product_id'=>$id])->first();
+        if(!$priceData){
+            $priceData = Unitprice::create([
+                'price' => $price,
+                'product_id' => $id
+            ]);
+        }
 
 
         if ($request->hasFile('image')) {
-            $product->clearMediaCollection('medias');
-            foreach ($request->file('image') as $file) {
-                $product
-                    ->addMedia($file)
-                    ->toMediaCollection('products');
-            }
+            $product->clearMediaCollection('products');
+            $product->addMedia($request->file('image'))->toMediaCollection('products');
         }
-        $product->medias;
-        $product->update($request->validated());
+
+        $product->update([
+            'name' => $request->get('name'),
+            'description' => $request->get('description'),
+            'category_id' => $request->get('category_id'),
+            'unitprice_id' => $priceData->id
+            ]);
+        $product->category;
+        $product->getImageUrlAttribute();
+        $product->unitprice;
         return response()->json($product);
     }
-
     // Delete a product
     public function destroy($id)
     {
@@ -107,6 +121,7 @@ class ProductController extends Controller
                 'id' => $product->id,
                 'name' => $product->name,
                 'category' => $product->category->name,
+                'category_id' => $product->category->id,
                 'description' => $product->description,
                 'price' => $product->unitprice->price,
                 'image' => $product->getImageUrlAttribute()

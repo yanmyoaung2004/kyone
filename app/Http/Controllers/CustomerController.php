@@ -53,7 +53,7 @@ class CustomerController extends Controller
     {
         try {
             $customers = Customer::with('user')->get();
-            return response()->json(['customers' => $customers], 200);
+            return response()->json($customers);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to retrieve customers', 'message' => $e->getMessage()], 500);
         }

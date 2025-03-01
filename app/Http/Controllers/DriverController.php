@@ -37,6 +37,7 @@ class DriverController extends Controller
             'driver_license' => $request->driver_license,
             'nrc_number' => $request->nrc_number,
             'phone' => $request->phone,
+            'status'=> 'free'
         ]);
 
 

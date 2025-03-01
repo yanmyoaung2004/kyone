@@ -20,6 +20,8 @@ class AuthController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:6',
+                'phone' => 'required',
+                'address' => 'required',
             ]);
 
             $user = User::create([
@@ -30,8 +32,8 @@ class AuthController extends Controller
             $user->assignRole(Role::CUSTOMER);
             Customer::create([
                 'user_id' => $user->id,
-                'phone' => '123456',
-                'address' => 'address',
+                'phone' => $request->phone,
+                'address' => $request->address,
             ]);
 
 

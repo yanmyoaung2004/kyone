@@ -10,7 +10,7 @@ class OrderAssignTruck extends Model
     //
     use HasFactory;
 
-    protected $fillable = ['order_id', 'driver_id', 'truck_id'];
+    protected $fillable = ['order_id', 'driver_id', 'truck_id','route_key'];
 
     public function order()
     {
@@ -23,12 +23,12 @@ class OrderAssignTruck extends Model
     }
 
     public function truck()
-    
+
     {
         return $this->belongsTo(Truck::class);
     }
 
-  
 
-    
+
+
 }

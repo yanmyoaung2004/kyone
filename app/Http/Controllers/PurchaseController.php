@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Purchase;
 use App\Models\PurchasePrice;
 use App\Models\PurchaseProduct;
+use App\Models\Stock;
+use App\Models\WarehouseProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -48,8 +50,12 @@ class PurchaseController extends Controller
                     'product_id' => $product['id'],
                     'purchase_price_id' => $purchasePrice->id,
                     'quantity' => $product['quantity'],
+                    'stored_quantity' => 0,
                     'purchase_id' => $purchase->id,
                 ]);
+                $stock = Stock::where('product_id', $product['id'])->first();
+                $stock->quantity += $product['quantity'];
+                $stock->save();
             }
             DB::commit();
             return response()->json([
@@ -73,7 +79,49 @@ class PurchaseController extends Controller
 
     public function getPurchaseProductData($invoice_number){
         $purchase = Purchase::where('invoice_number', $invoice_number)->first();
-        $products = PurchaseProduct::with('product', 'purchasePrice')->where('purchase_id', $purchase->id)->get();
+        $products = PurchaseProduct::with('product', 'purchasePrice')
+            ->where('purchase_id', $purchase->id)
+            ->whereColumn('stored_quantity', '<', 'quantity')
+            ->get();
         return response()->json($products);
+    }
+
+    public function getPurchaseProductDataForDetail($invoice_number){
+        $purchase = Purchase::where('invoice_number', $invoice_number)->first();
+        $products = PurchaseProduct::with('product', 'purchasePrice')
+            ->where('purchase_id', $purchase->id)
+            ->get();
+        return response()->json($products);
+    }
+
+    public function assignWarehouse(Request $request){
+        $assignments = $request->get('assignments');
+        $purchaseProductId = $request->get('purchaseProductId');
+        DB::beginTransaction();
+        foreach($assignments as $assignment){
+            $warehouseProduct = WarehouseProduct::where([
+                'warehouse_id' => $assignment['warehouseId'],
+                'product_id' => $assignment['productId'],
+            ])->first();
+
+            $purchase = PurchaseProduct::find($purchaseProductId);
+            $purchase->stored_quantity += $assignment['quantity'];
+            $purchase->save();
+
+            if(!$warehouseProduct){
+                WarehouseProduct::create([
+                    'warehouse_id' => $assignment['warehouseId'],
+                    'product_id' => $assignment['productId'],
+                    'quantity' => $assignment['quantity'],
+                ]);
+            }else{
+                $warehouseProduct->quantity += $assignment['quantity'];
+                $warehouseProduct->save();
+            }
+        }
+        DB::commit();
+        return response()->json([
+           'message' => 'Warehouse product assignments successfully!',
+        ], 200);
     }
 }

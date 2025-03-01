@@ -9,14 +9,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Resources\OrderResource;
 use App\Http\Requests\OrderStoreRequest;
-use App\Mail\OrderStatusUpdated;
 use App\Models\City;
 use App\Models\Customer;
+use App\Models\Invoice;
 use App\Models\Location;
 use App\Models\Notification;
 use App\Models\Unitprice;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -38,7 +37,7 @@ class OrderController extends Controller
 
         if($newStatus == 'completed'){
             $notification = Notification::create([
-                    'resource_id' => $order->customer->id,
+                    'resource_id' => $order->customer->user->id,
                     'type' => 'order',
                     'role' => 'customer',
                     'message' => 'Your Order '. substr($order->invoice->invoice_number, 0, 9). ' has been delivered!',
@@ -46,7 +45,6 @@ class OrderController extends Controller
             broadcast(new UserEvent($notification))->toOthers();
 
             $notificationSale = Notification::create([
-                    'resource_id' => $order->customer->id,
                     'type' => 'order',
                     'role' => 'sale',
                     'message' => substr($order->invoice->invoice_number, 0, 9). ' has been delivered!',
@@ -102,6 +100,28 @@ class OrderController extends Controller
 
         return response()->json($formattedData);
     }
+
+    public function getOrdersByStatus(Request $request)
+    {
+        $status = $request->query('status');
+        $orders = Order::with(['customer.user', 'location'])
+            ->where('status', $status)
+            ->get();
+        $formattedData = $orders->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'customer' => $order->customer->user->name ?? 'Unknown',
+                'address' => $order->location->address ?? 'No address',
+                'eta' => $order->location->city->eta,
+                'status' => $order->status,
+                'isReturn' => $order->isReturn,
+            ];
+        });
+
+
+        return response()->json($formattedData);
+    }
+
 
     public function getReturn()
     {
@@ -159,6 +179,8 @@ class OrderController extends Controller
                 'status' => 'pending',
                 'isReturn' => true,
                 'return_id' => $originalOrder->id,
+                'phone' => $originalOrder->phone,
+                'name' => $originalOrder->name,
                 'total_price' => 0,
                 'eta' => 10,
             ]);
@@ -208,16 +230,20 @@ class OrderController extends Controller
             if($locationChoice == 'map'){
                 $cityData = City::where('name', $city)->first();
                 $city = $cityData->id;
-
+            }else{
+                $cityData = City::find($city);
             }
+
             $location = Location::create([
-                'address' => $shipmentInfo['address'],
+                'address' => $shipmentInfo['address'] . ', ' . $cityData->name,
                 'city_id' => $city,
-                'state' => 'test',
             ]);
             $order = Order::create([
                 'customer_id' => $customer->id,
                 'location_id' => $location->id,
+                'name' => $shipmentInfo['name'],
+                'phone' => $shipmentInfo['phone'],
+                'note' => $shipmentInfo['note'],
                 'status' => 'pending',
                 'total_price' => $request->get('total'),
                 'eta' => $location->city->eta,
@@ -279,10 +305,8 @@ class OrderController extends Controller
             }
             DB::commit();
 
-            Mail::to($order->customer->user->email)->send(new OrderStatusUpdated($order, 'processing'));
-
             $notification = Notification::create([
-                'resource_id' => $order->customer->id,
+                'resource_id' => $order->customer->user->id,
                 'type' => 'order',
                 'role' => 'customer',
                 'message' => 'Your Order '. substr($order->invoice->invoice_number, 0, 9). ' has been accepted!',
@@ -295,10 +319,9 @@ class OrderController extends Controller
                 'role' => 'warehouse',
                 'message' => substr($order->invoice->invoice_number, 0, 9). ' requires to be dispatched!'
             ]);
-            // Broadcast the event
+
             broadcast(new UserEvent($notificationWarehouse))->toOthers();
-
-
+//            Mail::to($order->customer->user->email)->send(new OrderStatusUpdated($order, 'processing'));
             return response()->json([
                 'message' => 'Order successfully accepted!',
                 'order_id' => $order->id,
@@ -315,7 +338,14 @@ class OrderController extends Controller
 
     public function getOrderById($orderId)
     {
-        $order = Order::with('products.unitprice', 'customer.user')->find($orderId);
+        $order = Order::with('products.unitprice', 'location.city')->find($orderId);
+        return response()->json($order);
+    }
+
+    public function getOrderDetailByInoviceId($invoiceId)
+    {
+        $invoice = Invoice::where('invoice_number', $invoiceId)->first();
+        $order = Order::with('products.unitprice', 'location.city','customer.user','orderAssignTruck.truck','orderAssignTruck.driver')->find($invoice->order_id);
         return response()->json($order);
     }
 

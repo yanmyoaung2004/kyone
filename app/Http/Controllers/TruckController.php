@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Driver;
 use App\Models\Order;
 use App\Models\OrderAssignTruck;
 use App\Models\Truck;
@@ -103,7 +104,7 @@ public function getTruckOrders($truckId)
 {
     // Get orders assigned to this truck
     $assignedOrders = OrderAssignTruck::where('truck_id', $truckId)
-        ->with(['order.customer.user', 'order.products', 'order.location' ,'driver.user'])
+        ->with(['order.customer.user', 'order.products.unitPrice', 'order.location', 'order.invoice' ,'driver.user'])
         ->get();
 
     $truck = Truck::find($truckId);
@@ -117,6 +118,12 @@ public function getTruckOrders($truckId)
         'orders' => $assignedOrders->pluck('order'),
         'driver' => $assignedOrders->first()->driver
     ]);
+}
+
+public function getAssignedOrderByDriver($id){
+    $driver = Driver::where('user_id', $id)->first();
+    $orders = OrderAssignTruck::with('driver', 'truck', 'order.products', 'order.location.city')->where('driver_id', $driver->id)->get();
+    return response()->json($orders);
 }
 
 

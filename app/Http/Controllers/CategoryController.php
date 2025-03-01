@@ -21,6 +21,11 @@ class CategoryController extends Controller
         return response()->json($categories);
     }
 
+    public function getAll()
+    {
+        $categories = Category::all();
+        return response()->json($categories);
+    }
 
     // Store a new category
     public function store(Request $request)

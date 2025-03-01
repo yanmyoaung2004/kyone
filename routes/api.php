@@ -27,6 +27,7 @@ use App\Http\Controllers\OrderReturnController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ServiceCenterController;
 use App\Http\Controllers\WarehouseController;
+use App\Models\OrderAssignTruck;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -43,6 +44,7 @@ Route::patch('/customers/{id}', [CustomerController::class, 'update']);
 Route::delete('/customers/{id}', [CustomerController::class, 'delete']);
 
 Route::apiResource('categories', CategoryController::class);
+Route::get('categories/getAll/warehouse', [CategoryController::class, 'getAll']);
 Route::apiResource('cities', CityController::class);
 Route::post('/cities/update/{id}', [CityController::class, 'update']);
 
@@ -52,6 +54,7 @@ Route::get('/customers/{customerId}/invoices', [InvoiceController::class, 'custo
 Route::apiResource('dirvers', DriverController::class);
 Route::apiResource('trucks', TruckController::class);
 Route::apiResource('complaints', ComplaintController::class);
+Route::put('complaints/status/update/{id}/{status}', [ComplaintController::class, 'statusUpdate']);
 
 Route::apiResource('stocks', StockController::class);
 
@@ -63,6 +66,7 @@ Route::apiResource('orderAssignTrucks', OrderAssignTruckController::class);
 
 
 Route::apiResource('/orders', App\Http\Controllers\OrderController::class);
+Route::get('/getorderbystatus', [OrderController::class, 'getOrdersByStatus']);
 Route::get('/orders/user/{userId}',[OrderController::class, 'getOrderByUserId']);
 Route::get('/stocks/check_stock/{productId}', [StockController::class, 'checkStock']);
 
@@ -90,6 +94,7 @@ Route::get('/orders/{id}/truck-driver', [OrderController::class, 'getTruckAndDri
 
 //getTruckOrder
 Route::get('/truck/{id}/orders', [TruckController::class, 'getTruckOrders']);
+Route::get('/driver/orderassign/{id}', [TruckController::class, 'getAssignedOrderByDriver']);
 Route::post('orders/{id}/status', [OrderController::class, 'changeStatus']);
 Route::get('orders/on_progress', [OrderController::class, 'onProgressOrders']);
 
@@ -105,6 +110,7 @@ Route::get('warehouse/stocks', [StockController::class, 'indexForWarehouse']);
 Route::post('warehouse/stocks/update', [StockController::class, 'updateStock']);
 
 Route::get('sale/products/topSellingProducts/{year}', [ProductController::class, 'topSellingProducts']);
+Route::get('sale/products/getMonthlyOrders/{year}', [SaleController::class, 'getMonthlyOrdersByYearMysql']);
 Route::get('sale/products/getMonthlyOrders', [SaleController::class, 'getMonthlyOrdersMysql']);
 Route::get('sale/products/topSellingLocations/{i}', [SaleController::class, 'topSellingLocations']);
 
@@ -118,9 +124,10 @@ Route::apiResource('/drivers', DriverController::class);
 
 Route::get('/orders/accept/{orderId}', [OrderController::class, 'acceptOrder']);
 Route::get('/orders/getorderbyid/{orderId}', [OrderController::class, 'getOrderById']);
+Route::get('/orders/getorderbyInvoiceId/{invoiceId}', [OrderController::class, 'getOrderDetailByInoviceId']);
 
 
-Route::get('/notifications',[NotificationController::class,'index']);
+Route::get('/notifications/{userId}',[NotificationController::class,'index']);
 Route::post('/notifications',[NotificationController::class,'create']);
 
 Route::apiResource('/returns', OrderReturnController::class);
@@ -149,7 +156,22 @@ Route::prefix('warehouses')->group(function () {
     Route::delete('/{id}', [WarehouseController::class, 'destroy']);
     Route::get('/product/getWarehouseProduct/{id}', [WarehouseController::class, 'getWarehouseProduct']);
     Route::post('/product/transferWarehouse/transfer', [WarehouseController::class, 'warehouseTransfer']);
+    Route::post('/product/checkwarehouseavailability/check', [WarehouseController::class, 'warehouseOrderAvailability']);
+    Route::post('/product/checkwarehouseavailability/warehouse', [WarehouseController::class, 'warehousesThatCanFulfillOrders']);
 });
 Route::post('/purchase/create', [PurchaseController::class, 'createPurchase']);
+Route::post('/purchase/assign/warehouse', [PurchaseController::class, 'assignWarehouse']);
 Route::get('/purchase/data/get', [PurchaseController::class, 'getPurchaseData']);
-Route::get('/purchase/data/product/{invoice_number}', [PurchaseController::class, 'getPurchaseProductData']);
+Route::get('/purchase/data/product/{invoice_number}', [PurchaseController::class, 'getPurchaseProductDataForDetail']);
+
+Route::post('/reports/sale', [SaleController::class, 'generateReport']);
+Route::get('/reports/sale/{id}',[SaleController::class, 'getReportById']);
+Route::get('/reports/sale', [SaleController::class, 'getSalesReports']);
+Route::get('reports/sale/top-selling-products/{startDate}/{endDate}', [SaleController::class, 'topSellingProducts']);
+
+
+Route::get('report/orders/daily', [SaleController::class, 'getDailyOrdersMysql']);
+Route::post('report/orders/weekly', [SaleController::class, 'getWeeklyOrdersMysql']);
+
+
+Route::get('orders/truck/assigned/{id}', [OrderAssignTruckController::class, 'getAssignedOrders']);

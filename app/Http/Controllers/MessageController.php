@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\CustomerMessageSent;
+use App\Events\MessageSent;
 use App\Events\SentMessage;
 use App\Models\Message;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class MessageController extends Controller
         'sender_id' => 'required',
         'receiver_id' => 'nullable',
         'message' => 'required|string',
-        'role' => 'required|in:warehouse,sale,customer', //role is receiver role
+        'role' => 'required|in:warehouse,sale,customer',
     ]);
     $message = Message::create([
         'sender_id' => $validated['sender_id'],
@@ -24,13 +25,7 @@ class MessageController extends Controller
         'message' => $validated['message'],
         'role' => $validated['role']
     ]);
-    if($message->role == "customer"){
-        broadcast(new CustomerMessageSent($message));
-    }else{
-        broadcast(new SentMessage($message));
-    }
-
-
+    broadcast(new MessageSent($message));
     return response()->json([
         'message' => 'Message sent successfully',
         'data' => $message
@@ -48,9 +43,10 @@ public function customerMessage($customer_id){
 }
 
 public function saleMessage($receiver_id){
-    $messages = Message::where('role', "sale")
-                ->orWhere('receiver_id',$receiver_id)
-                   ->get();
+    $messages = Message::where('receiver_id', $receiver_id)
+                ->orWhere('sender_id',$receiver_id)
+                ->get();
+    Log::info($messages);
     return response()->json([
         'message' => "Message get successfully",
         'data' => $messages,

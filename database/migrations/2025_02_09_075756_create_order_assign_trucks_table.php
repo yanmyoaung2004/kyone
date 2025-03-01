@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->foreignId('driver_id')->constrained('drivers')->onDelete('cascade');
             $table->foreignId('truck_id')->constrained('trucks')->onDelete('cascade');
+            $table->string('route_key')->nullable();
             $table->timestamps();
         });
     }

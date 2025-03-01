@@ -108,11 +108,13 @@ class StockController extends Controller
     {
         $productId = $request->get('productId');
         $quantity = $request->get('quantity');
+        $safetyStock = $request->get('safetyStock');
         $stock = Stock::findOrFail($productId);
         if (!$stock) {
             return response()->json(['message' => 'Stock not found'], 404);
         }
         $stock->quantity += $quantity;
+        $stock->safety_stock = $safetyStock;
         $stock->save();
         return response()->json(['message' => 'Stock updated successfully', 'stock' => $stock]);
     }

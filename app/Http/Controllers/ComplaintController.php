@@ -13,8 +13,7 @@ class ComplaintController extends Controller
     // Get all complaints
     public function index()
     {
-        $complaints = Complaint::with('customer.user', 'order.invoice')->get();
-
+        $complaints = Complaint::with('customer.user', 'order.invoice', 'order.location')->get();
         return response()->json(
             $complaints,
             200
@@ -94,6 +93,17 @@ class ComplaintController extends Controller
 
         $complaint->delete();
         return response()->json(['message' => 'Complaint deleted successfully'], 200);
+    }
+
+
+    public function statusUpdate($id, $status){
+        $complaint = Complaint::find($id);
+        if (!$complaint) {
+            return response()->json(['message' => 'Complaint not found'], 404);
+        }
+        $complaint->status = $status;
+        $complaint->save();
+        return response()->json(['message' => 'Complaint status updated successfully', 'complaint' => $complaint], 200);
     }
 
 

@@ -14,6 +14,7 @@ class EscalatedIssueResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'route_key' => $this->route_key,
             'description' => $this->description,
             'order_id' => $this->order_id,
             'driver_id' => $this->driver_id,

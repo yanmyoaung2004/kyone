@@ -23,7 +23,7 @@ class DeliveryController extends Controller
                 'id' => $order->order->invoice->invoice_number,
                 'customer' => $order->order->customer->user->name,
                 'address' => $order->order->location->address,
-                'eta' => $order->order->eta,
+                'eta' => $order->order->location->city->eta,
                 'status' => $order->order->status,
                 'driver' => $order->driver->user->name,
                 ];
@@ -48,9 +48,9 @@ class DeliveryController extends Controller
                     'truck_id' => $firstOrder->truck->id,
                     'driver_name' => $firstOrder->driver->user->name ?? null,
                     'truck_name' => $firstOrder->truck->license_plate ?? null,
-                    'eta' => $firstOrder->order->eta ?? null,
+                    'eta' => $firstOrder->order->location->city->eta,
                     'status' => $firstOrder->order->status ?? null,
-                    'route' => 'Myitkyina'
+                    'route' => $firstOrder->order->location->city->name
                 ];
             })->toArray();
 

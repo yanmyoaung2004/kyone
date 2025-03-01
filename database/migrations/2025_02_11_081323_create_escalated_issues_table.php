@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('escalated_issues', function (Blueprint $table) {
             $table->id();
             $table->string('description');
-            $table->foreignId('order_id');
+            $table->string('route_key');
             $table->foreignId('driver_id');
             $table->enum('priority', ["high","low","medium"]);
             $table->enum('status', ["pending","inprogress","resolved"]);

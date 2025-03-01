@@ -24,7 +24,10 @@ class Order extends Model
         'total_price',
         'eta',
         'isReturn',
-        'return _id'
+        'return _id',
+        'name',
+        'note',
+        'phone'
     ];
 
     /**

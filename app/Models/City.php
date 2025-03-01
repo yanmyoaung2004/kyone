@@ -8,6 +8,6 @@ class City extends Model
 {
     //
     protected $fillable = [
-        'name', 'eta'];
+        'name', 'eta', 'shippingCost'];
 
 }
