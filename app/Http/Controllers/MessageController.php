@@ -26,6 +26,7 @@ class MessageController extends Controller
         'role' => $validated['role']
     ]);
     broadcast(new MessageSent($message));
+
     return response()->json([
         'message' => 'Message sent successfully',
         'data' => $message
@@ -46,9 +47,8 @@ public function saleMessage($receiver_id){
     $messages = Message::where('receiver_id', $receiver_id)
                 ->orWhere('sender_id',$receiver_id)
                 ->get();
-    Log::info($messages);
     return response()->json([
-        'message' => "Message get successfully",
+        'message' => "Message get for sale message successfully",
         'data' => $messages,
     ]);
 }

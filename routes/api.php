@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\MessageSent;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AuthController;
@@ -61,7 +62,7 @@ Route::apiResource('stocks', StockController::class);
 
 Route::apiResource('unitprices', UnitpriceController::class);
 Route::apiResource('products', ProductController::class)->except(['update']);
-Route::post('/products/{id}', [ProductController::class, 'update']);
+Route::post('/products/{id}', [ProductController::class, 'updatje']);
 Route::apiResource('orderAssignTrucks', OrderAssignTruckController::class);
 
 

@@ -16,6 +16,8 @@ use App\Models\Location;
 use App\Models\Notification;
 use App\Models\Unitprice;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -163,7 +165,6 @@ class OrderController extends Controller
                 })
             ];
         });
-
         return response()->json($filteredOrder);
     }
 
