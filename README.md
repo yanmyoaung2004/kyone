@@ -122,6 +122,18 @@ php artisan serve
 npm run dev
 ```
 
+## 🖥️ Frontend UI
+
+Frontend interface is developed separately:
+
+👉 [Kyaone UI Repository](https://github.com/yanmyoaung2004/kyaone-frontend)
+
+
+*(Connects to backend APIs for real-time interaction and visualization)*
+
+---
+
+
 ## 📚 Documentation
 
 API documentation: `https://modern-opossum-singular.ngrok-free.app/docs/api#/`
